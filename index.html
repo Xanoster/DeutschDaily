@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>DeutschDaily</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  color-scheme: light;
+  --bg: #F4F2EE;
+  --white: #FFFFFF;
+  --border: #E2DFD9;
+  --border-strong: #C8C4BC;
+  --text: #1C1917;
+  --text-2: #57534E;
+  --text-3: #A8A29E;
+  --green: #16A34A;
+  --green-bg: #F0FDF4;
+  --green-border: #BBF7D0;
+  --blue: #2563EB;
+  --blue-bg: #EFF6FF;
+  --blue-border: #BFDBFE;
+  --pink: #DB2777;
+  --pink-bg: #FDF2F8;
+  --pink-border: #FBCFE8;
+  --amber: #D97706;
+  --amber-bg: #FFFBEB;
+  --amber-border: #FDE68A;
+  --purple: #7C3AED;
+  --purple-bg: #F5F3FF;
+  --purple-border: #DDD6FE;
+  --orange: #EA580C;
+  --orange-bg: #FFF7ED;
+  --orange-border: #FED7AA;
+  --red: #DC2626;
+  --red-bg: #FEF2F2;
+  --red-border: #FECACA;
+  --accent: #2563EB;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+}
+html { scroll-behavior: smooth; color-scheme: light !important; background: #F4F2EE !important; }
+body { background: #F4F2EE !important; color: #1C1917 !important; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+input, button, select, textarea { color-scheme: light; }
+.app { max-width: 680px; margin: 0 auto; padding: 0 16px 88px; background: #F4F2EE; }
+
+/* ─── Header ─── */
+.hdr { position: sticky; top: 0; z-index: 100; background: #F4F2EE; border-bottom: 1px solid var(--border); padding: 12px 16px; }
+.hdr-in { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 12px; width: 100%; }
+.logo { font-weight: 700; font-size: 17px; cursor: pointer; color: var(--text); flex-shrink: 0; letter-spacing: -0.3px; }
+.logo em { color: var(--accent); font-style: normal; }
+.hdr-mid { flex: 1; min-width: 0; }
+.pbar-bg { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 3px; }
+.pbar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.5s; }
+.pbar-lbl { font-size: 11px; color: var(--text-3); text-align: right; }
+.streak-pill { display: flex; align-items: center; gap: 4px; background: var(--amber-bg); border: 1px solid var(--amber-border); padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; color: var(--amber); cursor: pointer; flex-shrink: 0; }
+
+/* ─── Nav ─── */
+.nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: #FFFFFF; border-top: 1px solid var(--border); display: flex; padding: 6px 0 max(6px, env(safe-area-inset-bottom)); }
+.nb { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 10px; font-family: 'Inter', sans-serif; font-weight: 500; padding: 5px; transition: color 0.15s; }
+.nb.on { color: var(--accent); }
+.nb-icon { font-size: 20px; line-height: 1; }
+
+/* ─── Goal Card ─── */
+.goal-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin: 14px 0; box-shadow: var(--shadow); }
+.goal-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.goal-title { font-size: 15px; font-weight: 600; }
+.goal-date { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.goal-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-2); font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.goal-btn:hover { border-color: var(--border-strong); }
+.goal-nums { display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap; }
+.gnum-v { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; }
+.gnum-l { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.goal-bar-bg { height: 7px; background: var(--bg); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+.goal-bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.5s; }
+.goal-complete { text-align: center; padding: 8px; font-size: 14px; color: var(--green); font-weight: 600; }
+
+/* ─── Sentence Card ─── */
+.sc { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); opacity: 0; animation: rise 0.25s ease forwards; overflow: hidden; position: relative; }
+.sc.lrn { border-color: var(--green-border); }
+.sc.fav { border-color: var(--amber-border); }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.sc-top { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; flex-wrap: wrap; }
+.lvl-tag { padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 600; }
+.lA1 { background: #DCFCE7; color: #15803D; }
+.lA2 { background: #FEF3C7; color: #B45309; }
+.lB1 { background: #DBEAFE; color: #1D4ED8; }
+.lrn-badge { font-size: 11px; color: var(--green); font-weight: 600; }
+.topic-label { font-size: 12px; color: var(--text-3); }
+
+.sentence-de { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); line-height: 1.3; margin-bottom: 5px; cursor: pointer; user-select: text; }
+.sentence-ph { font-size: 12px; color: var(--text-3); font-style: italic; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+.ph-lbl { font-style: normal; margin-right: 3px; }
+.sentence-en { font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 6px; transition: opacity 0.2s, filter 0.2s; cursor: pointer; user-select: none; }
+.sentence-en.hid { opacity: 0; filter: blur(4px); pointer-events: none; height: 0; overflow: hidden; margin: 0; }
+.reveal-hint { font-size: 12px; color: var(--text-3); margin-bottom: 4px; }
+.sentence-use { font-size: 13px; color: var(--text-2); background: var(--bg); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple-border); display: none; line-height: 1.5; margin-top: 4px; }
+
+.card-actions { display: flex; gap: 7px; margin-top: 12px; flex-wrap: wrap; }
+.act-btn { display: inline-flex; align-items: center; gap: 5px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-2); font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+.act-btn:hover { border-color: var(--border-strong); color: var(--text); }
+.act-btn.is-learned { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+.act-btn.is-fav { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber); }
+.act-btn.is-playing { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
+.act-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.pulse { animation: pulse 1.2s ease infinite; }
+
+/* ─── Pattern Card ─── */
+.pc { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); opacity: 0; animation: rise 0.25s ease forwards; }
+.pc.und { border-color: var(--purple-border); background: linear-gradient(135deg, var(--white) 0%, rgba(124,58,237,0.02) 100%); }
+.pat-cat-tag { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 600; background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); margin-bottom: 9px; }
+.pat-template { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.pat-blank { color: var(--accent); font-style: italic; }
+.pat-meaning { font-size: 13px; color: var(--text-2); margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.pat-examples { display: flex; flex-direction: column; gap: 7px; }
+.pat-ex { padding: 8px 12px; background: var(--bg); border-radius: 8px; border-left: 3px solid var(--blue-border); }
+.pat-de { font-size: 14px; font-weight: 600; color: var(--text); }
+.pat-en { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.pat-actions { display: flex; gap: 7px; margin-top: 12px; }
+
+/* ─── Topic cards ─── */
+.topic-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+.topic-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.15s; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+.topic-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+.topic-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--tc, var(--accent)); }
+.tc-emoji { font-size: 26px; margin-bottom: 7px; display: block; line-height: 1; }
+.tc-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.tc-de { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.tc-prog { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
+.tc-count { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+.tc-bar-bg { flex: 1; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.tc-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+
+/* ─── Topic header ─── */
+.topic-hdr { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm); }
+.topic-hdr-em { font-size: 36px; flex-shrink: 0; line-height: 1; }
+.topic-hdr-name { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.topic-hdr-de { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+.topic-hdr-stats { display: flex; gap: 12px; margin-top: 8px; }
+.topic-stat { font-size: 12px; color: var(--text-3); }
+.topic-stat strong { color: var(--text); font-weight: 600; }
+
+/* ─── Filters ─── */
+.filter-row { display: flex; gap: 7px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip { flex-shrink: 0; padding: 6px 13px; border-radius: 99px; background: var(--white); border: 1px solid var(--border); font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-2); font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+.filter-chip.on { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
+.filter-chip:hover:not(.on) { border-color: var(--border-strong); }
+
+/* ─── Search ─── */
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 15px; pointer-events: none; }
+.search-input { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px 10px 36px; color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s; }
+.search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+.search-input::placeholder { color: var(--text-3); }
+
+/* ─── Stats ─── */
+.stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 18px; }
+.stat-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow-sm); }
+.stat-lbl { font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+.stat-num { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+.prog-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 9px; margin-bottom: 7px; box-shadow: var(--shadow-sm); }
+.prog-row.clk { cursor: pointer; transition: all 0.15s; }
+.prog-row.clk:hover { border-color: var(--border-strong); }
+.prog-lbl { font-size: 12px; font-weight: 600; color: var(--text-2); min-width: 22px; }
+.prog-bar { flex: 1; height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+.prog-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
+.prog-pct { font-size: 11px; color: var(--text-3); min-width: 30px; text-align: right; }
+.prog-cnt { font-size: 11px; color: var(--text-3); min-width: 44px; text-align: right; }
+.sec-lbl { font-size: 12px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; padding: 16px 0 8px; border-top: 1px solid var(--border); margin-top: 4px; }
+.hist-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 9px; margin-bottom: 6px; box-shadow: var(--shadow-sm); }
+.hist-day { font-size: 12px; color: var(--text-3); min-width: 78px; }
+.hist-bar-bg { flex: 1; height: 5px; background: var(--bg); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+.hist-bar-fill { height: 100%; background: var(--green); border-radius: 99px; }
+.hist-cnt { font-size: 12px; font-weight: 600; color: var(--green); min-width: 22px; text-align: right; }
+
+/* ─── Modal ─── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+.modal-box { background: var(--white); border-radius: 18px 18px 0 0; padding: 22px; width: 100%; max-width: 680px; box-shadow: 0 -4px 24px rgba(0,0,0,0.12); }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+.modal-sub { font-size: 13px; color: var(--text-3); margin-bottom: 20px; }
+.goal-opts-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+.goal-opt { background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 11px 6px; text-align: center; cursor: pointer; font-size: 17px; font-weight: 700; color: var(--text-2); transition: all 0.15s; font-family: 'Inter', sans-serif; }
+.goal-opt:hover { border-color: var(--border-strong); }
+.goal-opt.sel { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
+.modal-done { width: 100%; padding: 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--text); font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.modal-done:hover { border-color: var(--border-strong); }
+
+
+/* ─── Misc ─── */
+.page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; margin: 20px 0 3px; }
+.page-sub { font-size: 13px; color: var(--text-3); margin-bottom: 18px; }
+.back-btn { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 500; padding: 14px 0 6px; transition: color 0.15s; }
+.back-btn:hover { color: var(--text); }
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text-3); background: #F4F2EE; }
+.empty-icon { font-size: 40px; margin-bottom: 10px; }
+.tip-card { background: var(--blue-bg); border: 1px solid var(--blue-border); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
+.tip-lbl { font-size: 11px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+.tip-text { font-size: 13px; color: #1D4ED8; }
+.reveal-hint-bar { font-size: 12px; color: var(--text-3); text-align: center; margin-bottom: 12px; font-style: italic; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ─── SRS Review Section ─── */
+.review-section { background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.review-section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.review-section-title { font-size: 14px; font-weight: 700; color: var(--amber); display: flex; align-items: center; gap: 6px; }
+.review-count-badge { background: var(--amber); color: white; border-radius: 99px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+.review-section-sub { font-size: 12px; color: var(--amber); margin-bottom: 10px; opacity: 0.85; }
+.review-practice-btn { background: var(--amber); color: white; border: none; border-radius: 9px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0; }
+.review-practice-btn:hover { opacity: 0.88; }
+
+/* ─── Grammar Tag ─── */
+.gram-tag { padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.2px; flex-shrink: 0; }
+
+
+/* ─── Keyboard hint ─── */
+.kbd-hint { font-size: 11px; color: var(--text-3); text-align: center; margin-top: 8px; }
+.kbd { background: var(--bg); border: 1px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; font-size: 10px; font-family: monospace; color: var(--text-2); }
+
+/* ─── SRS level dot ─── */
+.srs-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: inline-block; flex-shrink: 0; }
+.srs-dot.filled { background: var(--green); }
+.srs-dots { display: flex; gap: 3px; align-items: center; margin-left: 4px; }
+
+/* ─── Practice Overlay ─── */
+.practice-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 400; display: flex; flex-direction: column; overflow: hidden; }
+.practice-hdr { background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.practice-exit { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-2); font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.15s; flex-shrink: 0; }
+.practice-exit:hover { border-color: var(--border-strong); }
+.practice-prog-wrap { flex: 1; }
+.practice-prog-bar { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 3px; }
+.practice-prog-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
+.practice-prog-lbl { font-size: 11px; color: var(--text-3); text-align: right; }
+.practice-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px; gap: 14px; overflow-y: auto; }
+.practice-card { width: 100%; max-width: 520px; background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; box-shadow: var(--shadow); }
+.practice-topic-lbl { font-size: 12px; color: var(--text-3); margin-bottom: 10px; }
+.practice-de { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 8px; letter-spacing: -0.3px; }
+.practice-ph { font-size: 12px; color: var(--text-3); font-style: italic; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.practice-reveal-hint { font-size: 14px; color: var(--text-3); text-align: center; cursor: pointer; padding: 12px; border-radius: 10px; background: var(--bg); border: 1px dashed var(--border); user-select: none; transition: all 0.15s; }
+.practice-reveal-hint:hover { border-color: var(--accent); color: var(--accent); }
+.practice-en { font-size: 20px; font-weight: 600; color: var(--accent); margin-bottom: 8px; line-height: 1.3; }
+.practice-use { font-size: 13px; color: var(--text-2); background: var(--bg); padding: 9px 12px; border-radius: 8px; border-left: 3px solid var(--purple-border); line-height: 1.5; }
+.practice-btns { display: flex; gap: 10px; width: 100%; max-width: 520px; }
+.prac-again-btn { flex: 1; padding: 15px; background: var(--amber-bg); border: 2px solid var(--amber-border); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--amber); font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.prac-got-btn { flex: 1; padding: 15px; background: var(--green-bg); border: 2px solid var(--green-border); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; color: var(--green); font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.prac-again-btn:hover { background: #fef3c7; }
+.prac-got-btn:hover { background: #dcfce7; }
+
+/* ─── Practice Summary ─── */
+.prac-summary { width: 100%; max-width: 520px; background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 28px 20px; text-align: center; box-shadow: var(--shadow); }
+.prac-sum-icon { font-size: 52px; margin-bottom: 12px; }
+.prac-sum-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; letter-spacing: -0.3px; }
+.prac-sum-sub { font-size: 14px; color: var(--text-3); margin-bottom: 22px; }
+.prac-sum-stats { display: flex; gap: 10px; justify-content: center; margin-bottom: 22px; }
+.prac-sum-stat { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 22px; }
+.prac-sum-n { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+.prac-sum-l { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.prac-sum-actions { display: flex; gap: 10px; justify-content: center; }
+.prac-sum-retry { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+.prac-sum-done { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-2); font-family: 'Inter', sans-serif; }
+
+/* ─── Learned Page / Library Tabs ─── */
+.lib-tabs { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 3px; margin-bottom: 16px; }
+.lib-tab { flex: 1; padding: 8px 10px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-3); font-family: 'Inter', sans-serif; border: none; background: none; transition: all 0.15s; text-align: center; }
+.lib-tab.on { background: var(--white); color: var(--text); box-shadow: var(--shadow-sm); }
+.learned-cta { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.learned-cta-info .learned-cta-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.learned-cta-info .learned-cta-sub { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+.learned-practice-btn { background: var(--green); color: white; border: none; border-radius: 9px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0; transition: opacity 0.15s; }
+.learned-practice-btn:hover { opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-in">
+    <div class="logo" onclick="nav('today')">Deutsch<em>Daily</em></div>
+    <div class="hdr-mid">
+      <div class="pbar-bg"><div class="pbar-fill" id="hpf" style="width:0%"></div></div>
+      <div class="pbar-lbl" id="hpl">0 / 0 learned</div>
+    </div>
+    <div class="streak-pill" id="stk" onclick="nav('stats')">🔥 <span id="stk-n">0</span></div>
+  </div>
+</div>
+
+<div class="app" id="root" style="min-height:100vh;background:#F4F2EE"></div>
+
+<nav class="nav">
+  <button class="nb on" id="nb-today" onclick="nav('today')"><span class="nb-icon">📅</span>Today</button>
+  <button class="nb" id="nb-browse" onclick="nav('browse')"><span class="nb-icon">📚</span>Browse</button>
+  <button class="nb" id="nb-patterns" onclick="nav('patterns')"><span class="nb-icon">🧩</span>Patterns</button>
+  <button class="nb" id="nb-library" onclick="nav('saved')"><span class="nb-icon">📖</span>Library</button>
+  <button class="nb" id="nb-stats" onclick="nav('stats')"><span class="nb-icon">📊</span>Stats</button>
+</nav>
+
+<div class="modal-overlay" id="goal-modal" style="display:none" onclick="closeGoalModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">Set Daily Goal</div>
+    <div class="modal-sub">How many new sentences to learn each day?</div>
+    <div class="goal-opts-grid" id="goal-opts"></div>
+    <button class="modal-done" onclick="closeGoalModal()">Done</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const TOPICS=[
+{id:'greet',name:'Greetings',german:'Begrüßung',emoji:'👋',color:'#16A34A'},
+{id:'shop',name:'Shopping',german:'Einkaufen',emoji:'🛒',color:'#DC2626'},
+{id:'transport',name:'Transport',german:'Verkehr',emoji:'🚆',color:'#2563EB'},
+{id:'food',name:'Food & Cafés',german:'Essen & Trinken',emoji:'☕',color:'#EA580C'},
+{id:'health',name:'Health & Doctor',german:'Gesundheit & Arzt',emoji:'🏥',color:'#DB2777'},
+{id:'work',name:'Work & Office',german:'Arbeit & Büro',emoji:'💼',color:'#7C3AED'},
+{id:'housing',name:'Housing',german:'Wohnen',emoji:'🏠',color:'#D97706'},
+{id:'admin',name:'Bank & Admin',german:'Bank & Behörden',emoji:'🏦',color:'#0D9488'},
+{id:'social',name:'Social Life',german:'Freizeit & Freunde',emoji:'🎉',color:'#DB2777'},
+{id:'emergency',name:'Emergencies',german:'Notfälle',emoji:'🆘',color:'#DC2626'},
+{id:'phone',name:'Phone & Tech',german:'Handy & Internet',emoji:'📱',color:'#16A34A'},
+{id:'time',name:'Time & Numbers',german:'Zeit & Zahlen',emoji:'🕐',color:'#0D9488'},
+{id:'feelings',name:'Feelings',german:'Gefühle & Meinungen',emoji:'💬',color:'#7C3AED'},
+{id:'routine',name:'Daily Routine',german:'Alltag',emoji:'🌅',color:'#D97706'},
+{id:'weather',name:'Weather & Chat',german:'Wetter & Smalltalk',emoji:'🌤️',color:'#16A34A'},
+];
+
+const SENTENCES=[
+{id:'gr1',t:'greet',de:'Alles klar?',en:'All good? / Everything okay?',ph:'AL-es klar',use:'Casual greeting between friends - way more common than the formal version',lv:'A1'},
+{id:'gr2',t:'greet',de:"Na, wie läuft's?",en:"So, how's it going?",ph:'na, vee LOYF-ts',use:'Very casual - between friends or colleagues you know well',lv:'A1'},
+{id:'gr3',t:'greet',de:'Schönen Tag noch!',en:'Have a nice rest of the day!',ph:'SHUH-nen tahk nokh',use:'Said when leaving a shop, office, ending a chat - very common',lv:'A1'},
+{id:'gr4',t:'greet',de:'Tschüss!',en:'Bye! (casual)',ph:'chüss (like "choose")',use:'Everyday goodbye - used everywhere, even in shops',lv:'A1'},
+{id:'gr5',t:'greet',de:'Bis später!',en:'See you later!',ph:'bis SHPAY-ter',use:"When you'll see someone again the same day",lv:'A1'},
+{id:'gr6',t:'greet',de:'Freut mich!',en:'Nice to meet you!',ph:'froyt mikh',use:'Short and natural when being introduced',lv:'A1'},
+{id:'gr7',t:'greet',de:'Wie war dein Wochenende?',en:'How was your weekend?',ph:'vee var dine VO-khen-EN-deh',use:'Classic Monday morning small talk with colleagues',lv:'A2'},
+{id:'gr8',t:'greet',de:'Ich bin neu hier.',en:"I'm new here.",ph:'ikh bin noy HEER',use:'Perfect opener when meeting neighbors, colleagues, or locals',lv:'A1'},
+{id:'gr9',t:'greet',de:'Woher kommst du?',en:'Where are you from?',ph:'vo-HAIR KOMST doo',use:'Getting to know someone - natural and friendly',lv:'A1'},
+{id:'gr10',t:'greet',de:'Ich komme aus Indien.',en:"I'm from India.",ph:'ikh KOM-eh ows IN-dee-en',use:'Swap country name: Türkei, Pakistan, Iran, etc.',lv:'A1'},
+{id:'gr11',t:'greet',de:'Wie lange wohnst du schon hier?',en:'How long have you been living here?',ph:'vee LANG-eh vohnst doo shon heer',use:'Natural follow-up conversation when meeting someone new',lv:'A2'},
+{id:'gr12',t:'greet',de:'Hast du Kinder?',en:'Do you have children?',ph:'hast doo KIN-der',use:'Common small talk - Germans ask this fairly early',lv:'A1'},
+{id:'sh1',t:'shop',de:'Was kostet das?',en:'How much does this cost?',ph:'vas KOS-tet das',use:'Universal question - works in any shop',lv:'A1'},
+{id:'sh2',t:'shop',de:'Kann ich mit Karte zahlen?',en:'Can I pay by card?',ph:'kan ikh mit KAR-teh TSA-len',use:'ESSENTIAL - many German shops still prefer cash. Always ask first!',lv:'A1'},
+{id:'sh3',t:'shop',de:'Wo finde ich die Milch?',en:'Where can I find the milk?',ph:'vo FIN-deh ikh dee milkh',use:'In supermarket - swap "die Milch" for any item',lv:'A1'},
+{id:'sh4',t:'shop',de:'Ich schaue mich nur um.',en:"I'm just browsing, thanks.",ph:'ikh SHOW-eh mikh noor oom',use:'When a shop assistant approaches - saves awkward silence',lv:'A2'},
+{id:'sh5',t:'shop',de:'Haben Sie das in einer anderen Größe?',en:'Do you have this in a different size?',ph:'HA-ben zee das in EYE-ner AN-de-ren GRUH-seh',use:'In clothing stores',lv:'A2'},
+{id:'sh6',t:'shop',de:'Das nehme ich.',en:"I'll take this one.",ph:'das NAY-meh ikh',use:'Confirming a purchase - short and natural',lv:'A1'},
+{id:'sh7',t:'shop',de:'Haben Sie einen Beutel?',en:'Do you have a bag?',ph:'HA-ben zee EYE-nen BOY-tel',use:'At checkout - bring your own bag to be eco-friendly!',lv:'A1'},
+{id:'sh8',t:'shop',de:'Das ist mir etwas zu teuer.',en:"That's a bit too expensive for me.",ph:'das ist meer ET-vas tsoo TOY-er',use:'Polite way to decline a price without being rude',lv:'A2'},
+{id:'sh9',t:'shop',de:'Haben Sie etwas Günstigeres?',en:'Do you have something cheaper?',ph:'HA-ben zee ET-vas GÜN-sti-ge-res',use:'Asking for a cheaper alternative - perfectly normal',lv:'A2'},
+{id:'sh10',t:'shop',de:'Wo ist die Kasse?',en:'Where is the checkout / cashier?',ph:'vo ist dee KAS-seh',use:'In supermarkets and department stores',lv:'A1'},
+{id:'sh11',t:'shop',de:'Ich möchte das zurückgeben.',en:"I'd like to return this.",ph:'ikh MURKH-teh das tsoo-RÜCK-gey-ben',use:'At customer service - bring your receipt (Kassenbon)!',lv:'A2'},
+{id:'sh12',t:'shop',de:'Kann ich einen Kassenbon haben?',en:'Can I have a receipt?',ph:'kan ikh EYE-nen KAS-en-bon HA-ben',use:'Always ask - you need it for returns!',lv:'A1'},
+{id:'sh13',t:'shop',de:'Ist das reduziert?',en:'Is this reduced / on sale?',ph:'ist das reh-doo-ZEERT',use:'During sales season or when checking discount racks',lv:'A2'},
+{id:'sh14',t:'shop',de:'Wann öffnet das Geschäft?',en:'When does the shop open?',ph:'van UHF-net das geh-SHEFT',use:'Shops in Germany close early - always check! Also: schließt (closes)',lv:'A1'},
+{id:'tr1',t:'transport',de:'Einmal nach Stuttgart, bitte.',en:'One ticket to Stuttgart, please.',ph:'EYN-mal nakh SHTOOT-gart BI-teh',use:'At ticket counter - swap city name as needed',lv:'A1'},
+{id:'tr2',t:'transport',de:'Ist dieser Platz noch frei?',en:'Is this seat still free?',ph:'ist DEE-zer plats nokh fry',use:'On trains and buses - essential!',lv:'A1'},
+{id:'tr3',t:'transport',de:'Wann kommt der nächste Zug?',en:'When does the next train come?',ph:'van komt dair NAEKH-ste tsoog',use:'At station or checking DB Navigator app',lv:'A1'},
+{id:'tr4',t:'transport',de:'Wo muss ich umsteigen?',en:'Where do I need to change?',ph:'vo moos ikh OOM-shty-gen',use:'Asking about connections - very practical!',lv:'A2'},
+{id:'tr5',t:'transport',de:'Der Zug hat Verspätung.',en:'The train is delayed.',ph:'dair tsoog hat fer-SHPAY-toong',use:"You'll hear this often at German stations. Know it!",lv:'A2'},
+{id:'tr6',t:'transport',de:'Fährt dieser Bus zum Hauptbahnhof?',en:'Does this bus go to the main station?',ph:'fehrt DEE-zer boos tsum HOWPT-ban-hof',use:'At bus stops - swap destination as needed',lv:'A2'},
+{id:'tr7',t:'transport',de:'Wie lange dauert die Fahrt?',en:'How long does the journey take?',ph:'vee LANG-eh DOW-ert dee fart',use:'Before getting on a bus or train',lv:'A2'},
+{id:'tr8',t:'transport',de:'Gibt es eine Tageskarte?',en:'Is there a day ticket?',ph:'gipt es EYE-neh TA-ges-kar-teh',use:'Great value for multiple trips in one day',lv:'A2'},
+{id:'tr9',t:'transport',de:'Welcher Bahnsteig ist das?',en:'Which platform is that?',ph:'VEL-kher BAHN-shtyg ist das',use:'When confused about platforms - look for Gleis number too',lv:'A2'},
+{id:'tr10',t:'transport',de:'Wo kann ich ein Fahrrad mieten?',en:'Where can I rent a bicycle?',ph:'vo kan ikh eyn FAR-rad MEE-ten',use:'Germany has great bike paths - Deutsche Bahn has nextbike too',lv:'A2'},
+{id:'tr11',t:'transport',de:'Ist das die richtige Richtung nach...?',en:'Is this the right direction to...?',ph:'ist das dee RIKH-ti-geh RIKH-toong nakh',use:"When unsure you're heading right - ask anyone nearby",lv:'A2'},
+{id:'tr12',t:'transport',de:'Kann ich ein Taxi rufen?',en:'Can you call a taxi for me?',ph:'kan ikh eyn TAK-si ROO-fen',use:'Or just use the FREE NOW app directly',lv:'A1'},
+{id:'tr13',t:'transport',de:'Ich habe das falsche Ticket gekauft.',en:'I bought the wrong ticket.',ph:'ikh HA-beh das FAL-sheh TI-ket geh-KOWFT',use:'At the ticket counter or with a conductor - be honest!',lv:'A2'},
+{id:'tr14',t:'transport',de:'Bitte einmal hin und zurück.',en:'One return ticket, please.',ph:'BI-teh EYN-mal hin oond tsoo-RÜCK',use:'"Hin und zurück" = there and back = return ticket',lv:'A1'},
+{id:'fd1',t:'food',de:'Ich hätte gern einen Kaffee, bitte.',en:"I'd like a coffee, please.",ph:'ikh HET-eh gern EYE-nen KAF-eh BI-teh',use:'"Ich hätte gern" = the most polite, natural ordering phrase',lv:'A1'},
+{id:'fd2',t:'food',de:'Die Speisekarte, bitte.',en:'The menu, please.',ph:'dee SHPY-zeh-kar-teh BI-teh',use:'When seated at a restaurant - short and clear',lv:'A1'},
+{id:'fd3',t:'food',de:'Einmal das Schnitzel, bitte.',en:'One Schnitzel please.',ph:'EYN-mal das SHNIT-sel BI-teh',use:'"Einmal..." is how Germans order - use with anything on the menu',lv:'A1'},
+{id:'fd4',t:'food',de:'Zahlen, bitte!',en:'The bill, please!',ph:'TSA-len BI-teh',use:'Say this to the waiter when you want to pay - universally understood',lv:'A1'},
+{id:'fd5',t:'food',de:'Stimmt so.',en:'Keep the change.',ph:'shtimt zo',use:"When you don't want change back - very German! Say while handing money",lv:'A2'},
+{id:'fd6',t:'food',de:'Zusammen oder getrennt?',en:'Together or separate bills?',ph:'tsoo-ZA-men OH-der geh-TRENT',use:'The waiter will ask YOU this. "Zusammen" = all together',lv:'A2'},
+{id:'fd7',t:'food',de:'Das hat super geschmeckt!',en:'That tasted amazing!',ph:'das hat ZOO-per geh-SHMEKT',use:'Complimenting food - Germans love to hear this!',lv:'A2'},
+{id:'fd8',t:'food',de:'Was empfehlen Sie?',en:'What do you recommend?',ph:'vas em-PFAY-len zee',use:'Great way to start a conversation with the waiter',lv:'A2'},
+{id:'fd9',t:'food',de:'Haben Sie vegetarische Gerichte?',en:'Do you have vegetarian dishes?',ph:'HA-ben zee ve-geh-TAR-ish-eh geh-RIKH-teh',use:'Very common question - also: vegan, glutenfrei, laktosefrei',lv:'A2'},
+{id:'fd10',t:'food',de:'Ich bin allergisch gegen Nüsse.',en:"I'm allergic to nuts.",ph:'ikh bin ah-LER-gish GAY-gen NÜ-seh',use:'Important safety phrase - swap "Nüsse" with: Gluten, Milch, Eier',lv:'A2'},
+{id:'fd11',t:'food',de:'Einen Tisch für zwei Personen, bitte.',en:'A table for two people, please.',ph:'EYE-nen tish fuer tsvy per-ZO-nen BI-teh',use:'When entering a restaurant without reservation',lv:'A1'},
+{id:'fd12',t:'food',de:'Ist der Tisch noch frei?',en:'Is this table free?',ph:'ist dair tish nokh fry',use:'At cafés or busy restaurants - short and direct',lv:'A1'},
+{id:'fd13',t:'food',de:'Noch ein Wasser, bitte.',en:'Another water, please.',ph:'nokh eyn VAS-er BI-teh',use:'Ordering another round - works for anything: Bier, Kaffee',lv:'A1'},
+{id:'fd14',t:'food',de:'Das ist nicht das, was ich bestellt habe.',en:"This isn't what I ordered.",ph:'das ist nikht das, vas ikh beh-SHTELT HA-beh',use:'When the wrong dish arrives - say this calmly',lv:'A2'},
+{id:'fd15',t:'food',de:'Können Sie das einpacken?',en:'Could you pack this to go?',ph:'KUH-nen zee das EYN-pak-ken',use:'Doggy bag / takeaway - more accepted now than before',lv:'A2'},
+{id:'fd16',t:'food',de:'Ist die Bedienung inklusive?',en:'Is the service charge included?',ph:'ist dee beh-DEE-noong in-kloo-ZEE-veh',use:'Service is usually included - tipping ~10% is still appreciated',lv:'B1'},
+{id:'hl1',t:'health',de:'Mir ist nicht gut.',en:"I'm not feeling well.",ph:'meer ist nikht goot',use:'Natural way to say you feel sick - "Ich bin krank" also works',lv:'A1'},
+{id:'hl2',t:'health',de:'Ich habe Kopfschmerzen.',en:'I have a headache.',ph:'ikh HA-beh KOPF-shmer-tsen',use:'Replace "Kopf" with: Bauch (stomach), Hals (throat), Rücken (back)',lv:'A1'},
+{id:'hl3',t:'health',de:'Haben Sie noch einen freien Termin?',en:'Do you have a free appointment?',ph:'HA-ben zee nokh EYE-nen FRY-en ter-MEEN',use:'Calling a doctor\'s office - add "diese Woche" (this week) if urgent',lv:'A2'},
+{id:'hl4',t:'health',de:'Ich bin gesetzlich versichert.',en:'I have public health insurance.',ph:'ikh bin geh-ZETS-likh fer-ZI-khert',use:'Receptionist ALWAYS asks this first - also: "privat versichert"',lv:'A2'},
+{id:'hl5',t:'health',de:'Wo tut es weh?',en:'Where does it hurt?',ph:'vo toot es veh',use:'Doctor asks you this - answer: "Hier tut es weh" (It hurts here)',lv:'A1'},
+{id:'hl6',t:'health',de:'Ich habe Fieber.',en:'I have a fever.',ph:'ikh HA-beh FEE-ber',use:'Normal: 37°C | Fever: 38°C+ | High fever: 39°C+',lv:'A1'},
+{id:'hl7',t:'health',de:'Können Sie mir etwas verschreiben?',en:'Can you prescribe me something?',ph:'KUH-nen zee meer ET-vas fer-SHRY-ben',use:"Asking for a prescription at the doctor's",lv:'B1'},
+{id:'hl8',t:'health',de:'Wie oft soll ich das nehmen?',en:'How often should I take this?',ph:'vee oft zol ikh das NAY-men',use:'At pharmacy or after getting a prescription',lv:'A2'},
+{id:'hl9',t:'health',de:'Ich brauche ein Attest.',en:'I need a sick note.',ph:'ikh BROW-kheh eyn a-TEST',use:'For work after being sick 3+ days - essential in Germany!',lv:'A2'},
+{id:'hl10',t:'health',de:'Ich nehme täglich Medikamente.',en:'I take medication daily.',ph:'ikh NAY-meh TAYK-likh me-di-ka-MEN-teh',use:'Important to tell any doctor - add the medicine name after',lv:'A2'},
+{id:'hl11',t:'health',de:'Ich habe mich verletzt.',en:'I hurt / injured myself.',ph:'ikh HA-beh mikh fer-LETST',use:'For minor injuries - for emergencies say "Es ist ein Notfall"',lv:'A2'},
+{id:'hl12',t:'health',de:'Ich habe eine Lebensmittelallergie.',en:'I have a food allergy.',ph:'ikh HA-beh EYE-neh LAY-bens-mit-el-ah-LER-gee',use:'At any food situation - follow with: "gegen..." (against...)',lv:'A2'},
+{id:'hl13',t:'health',de:'Ich brauche dringend einen Termin.',en:'I urgently need an appointment.',ph:'ikh BROW-kheh DRING-end EYE-nen ter-MEEN',use:'"Dringend" (urgently) helps you get a faster slot',lv:'A2'},
+{id:'hl14',t:'health',de:'Seit drei Tagen habe ich Schmerzen.',en:"I've had pain for three days.",ph:'zeyt dry TA-gen HA-beh ikh SHMER-tsen',use:'"Seit" + time = how long you\'ve had the symptom',lv:'A2'},
+{id:'wk1',t:'work',de:'Ich bin heute im Homeoffice.',en:"I'm working from home today.",ph:'ikh bin HOY-teh im HOME-of-ees',use:'"Homeoffice" is a German word now - used daily by millions',lv:'A2'},
+{id:'wk2',t:'work',de:'Ich bin krank und komme heute nicht.',en:"I'm sick and won't come in today.",ph:'ikh bin krank oond KO-meh HOY-teh nikht',use:'Call your boss first thing in the morning - brief and direct',lv:'A2'},
+{id:'wk3',t:'work',de:'Wann ist Feierabend?',en:'When does the work day end?',ph:'van ist FY-er-ah-bent',use:'Classic German phrase - Feierabend is the sacred end of the workday!',lv:'A2'},
+{id:'wk4',t:'work',de:'Ich habe eine Frage dazu.',en:'I have a question about that.',ph:'ikh HA-beh EYE-neh FRA-geh da-TSOO',use:'"dazu" (about that) makes it clear what you\'re asking about',lv:'A2'},
+{id:'wk5',t:'work',de:'Das geht leider nicht.',en:"Unfortunately that won't work.",ph:'das gayt LY-der nikht',use:'Polite way to say no - "leider" softens it significantly',lv:'A2'},
+{id:'wk6',t:'work',de:'Können wir das verschieben?',en:'Can we postpone this?',ph:'KUH-nen veer das fer-SHEE-ben',use:'Rescheduling a meeting or task',lv:'A2'},
+{id:'wk7',t:'work',de:'Ich bin in einem Meeting.',en:"I'm in a meeting.",ph:'ikh bin in EYE-nem MEE-ting',use:'Explaining why you can\'t talk - "Meeting" is used in German too',lv:'A1'},
+{id:'wk8',t:'work',de:'Kannst du mir das kurz erklären?',en:'Can you briefly explain that to me?',ph:'kanst doo meer das koorz er-KLAY-ren',use:'"Kurz" (briefly) makes the request sound less demanding',lv:'A2'},
+{id:'wk9',t:'work',de:'Ich schicke dir gleich eine E-Mail.',en:"I'll send you an email shortly.",ph:'ikh SHI-keh deer glykh EYE-neh EE-mayl',use:'After a conversation - "gleich" means in a moment',lv:'A2'},
+{id:'wk10',t:'work',de:'Das müssen wir noch besprechen.',en:'We still need to discuss that.',ph:'das MÜ-sen veer nokh beh-SHPRE-khen',use:'After a meeting - flagging an open topic',lv:'B1'},
+{id:'wk11',t:'work',de:'Ich bin in fünf Minuten da.',en:"I'll be there in five minutes.",ph:'ikh bin in fünf mi-NOO-ten da',use:'Running late - quick and common',lv:'A2'},
+{id:'wk12',t:'work',de:'Melde dich, wenn du Fragen hast.',en:'Let me know if you have questions.',ph:'MEL-deh dikh, ven doo FRA-gen hast',use:'Friendly sign-off after explaining something to a colleague',lv:'B1'},
+{id:'ho1',t:'housing',de:'Guten Morgen, ich bin Ihr neuer Nachbar.',en:"Good morning, I'm your new neighbor.",ph:'GOO-ten MOR-gen, ikh bin eer NOY-er NAKH-bar',use:'Introducing yourself in your building - Germans appreciate this!',lv:'A1'},
+{id:'ho2',t:'housing',de:'Ich möchte mich anmelden.',en:"I'd like to register my address.",ph:'ikh MURKH-teh mikh AN-mel-den',use:'CRITICAL - You MUST do Anmeldung within 2 weeks of moving!',lv:'A2'},
+{id:'ho3',t:'housing',de:'Die Heizung funktioniert nicht.',en:"The heating isn't working.",ph:'dee HY-tsoong foong-tsyo-NEERT nikht',use:'Reporting issues to landlord - swap: Aufzug (lift), Waschmaschine',lv:'A2'},
+{id:'ho4',t:'housing',de:'Wann wird der Müll abgeholt?',en:'When is the rubbish collected?',ph:'van vird dair müll AP-geh-holt',use:'Recycling (Mülltrennung) is VERY serious in Germany!',lv:'A2'},
+{id:'ho5',t:'housing',de:'Wie hoch ist die Warmmiete?',en:'What is the total rent including heating?',ph:'vee hokh ist dee VARM-mee-teh',use:"Always ask Warmmiete - Kaltmiete doesn't include heating costs!",lv:'A2'},
+{id:'ho6',t:'housing',de:'Entschuldigung, können Sie etwas leiser sein?',en:'Excuse me, could you be a bit quieter?',ph:'ent-SHOOL-di-goong, KUH-nen zee ET-vas LY-zer zyne',use:'Polite noise complaint - Ruhestunde: 1–3pm & 10pm–7am!',lv:'A2'},
+{id:'ho7',t:'housing',de:'Wo ist der Sicherungskasten?',en:'Where is the fuse box?',ph:'vo ist dair ZI-kher-oongs-kas-ten',use:'Useful when power goes out in your flat',lv:'A2'},
+{id:'ho8',t:'housing',de:'Ich möchte kündigen.',en:'I want to give notice (terminate my contract).',ph:'ikh MURKH-teh KÜN-di-gen',use:'Notice period in Germany: usually 3 months - check your Mietvertrag!',lv:'B1'},
+{id:'ho9',t:'housing',de:'Der Aufzug ist kaputt.',en:'The lift is broken.',ph:'dair OWF-tsoog ist ka-POOT',use:'Report to Hausmeister (building manager) - very useful word: kaputt',lv:'A2'},
+{id:'ho10',t:'housing',de:'Ich hätte gerne meine Kaution zurück.',en:"I'd like my deposit back.",ph:'ikh HET-eh GER-neh my-neh kow-TSYON tsoo-RÜCK',use:'When moving out - Kaution = rental deposit, usually 3 months rent',lv:'B1'},
+{id:'ho11',t:'housing',de:'Darf ich ein Haustier halten?',en:'Am I allowed to keep a pet?',ph:'darf ikh eyn HOWS-teer HAL-ten',use:'Always ask before getting a pet - some landlords forbid it',lv:'A2'},
+{id:'ho12',t:'housing',de:'Können Sie bitte den Hausmeister schicken?',en:'Could you please send the building manager?',ph:'KUH-nen zee BI-teh den HOWS-mys-ter SHI-ken',use:'Hausmeister = handyman/building manager - very useful contact',lv:'A2'},
+{id:'ad1',t:'admin',de:'Ich möchte ein Konto eröffnen.',en:"I'd like to open a bank account.",ph:'ikh MURKH-teh eyn KON-to er-UHF-nen',use:'At the bank - bring: Ausweis, Anmeldebescheinigung, job contract',lv:'A2'},
+{id:'ad2',t:'admin',de:'Welche Unterlagen brauche ich?',en:'Which documents do I need?',ph:'VEL-kheh OON-ter-la-gen BROW-kheh ikh',use:'Ask this BEFORE any official appointment - saves wasted trips!',lv:'A2'},
+{id:'ad3',t:'admin',de:'Ich brauche eine Bescheinigung.',en:'I need an official confirmation letter.',ph:'ikh BROW-kheh EYE-neh be-SHEY-ni-goong',use:'At government offices - Bescheinigung = official confirmation',lv:'B1'},
+{id:'ad4',t:'admin',de:'Wann kann ich mit dem Bescheid rechnen?',en:'When can I expect the decision/letter?',ph:'van kan ikh mit dem be-SHEYT REKH-nen',use:'After submitting forms - German bureaucracy takes time. Ask this!',lv:'B1'},
+{id:'ad5',t:'admin',de:'Ich möchte Geld überweisen.',en:"I'd like to transfer money.",ph:'ikh MURKH-teh gelt Ü-ber-vy-zen',use:'At the bank or online banking - Überweisen = bank transfer',lv:'A2'},
+{id:'ad6',t:'admin',de:'Ich habe meine Karte verloren.',en:"I've lost my card.",ph:'ikh HA-beh my-neh KAR-teh fer-LO-ren',use:'Call your bank immediately - have your IBAN ready',lv:'A2'},
+{id:'ad7',t:'admin',de:'Können Sie das auf Englisch erklären?',en:'Can you explain that in English?',ph:'KUH-nen zee das owf ENG-lish er-KLAY-ren',use:'Emergency option at official offices - most staff speak some English',lv:'A2'},
+{id:'ad8',t:'admin',de:'Ich muss einen Termin online buchen.',en:'I need to book an appointment online.',ph:'ikh moos EYE-nen ter-MEEN on-LINE BOO-khen',use:'Most Ämter (offices) require online booking - google "[Amt] Termin"',lv:'A2'},
+{id:'ad9',t:'admin',de:'Was ist die IBAN für dieses Konto?',en:'What is the IBAN for this account?',ph:'vas ist dee EE-ban fuer DEE-zes KON-to',use:'IBAN is used for all German bank transfers - no sort codes',lv:'A2'},
+{id:'ad10',t:'admin',de:'Ich zahle per Lastschrift.',en:'I pay by direct debit.',ph:'ikh TSA-leh pair LAST-shrift',use:'Very common in Germany - authorizing automatic monthly payments',lv:'B1'},
+{id:'ad11',t:'admin',de:'Ich bin nicht einverstanden.',en:"I don't agree / I object to this.",ph:'ikh bin nikht eyn-fer-SHTAN-den',use:'Formal objection at official offices - polite but firm',lv:'B1'},
+{id:'ad12',t:'admin',de:'Wann ist die Abgabefrist?',en:'What is the submission deadline?',ph:'van ist dee ap-GA-beh-frist',use:'For tax forms (Steuererklärung) and other official submissions',lv:'B1'},
+{id:'sc1',t:'social',de:'Hast du Lust, heute Abend auszugehen?',en:'Do you fancy going out tonight?',ph:'hast doo loost HOY-teh AH-bent OWS-tsoo-gay-en',use:'"Lust haben" = feel like doing something. Very casual invite!',lv:'A2'},
+{id:'sc2',t:'social',de:'Ich bin leider schon verplant.',en:"I'm afraid I'm already busy.",ph:'ikh bin LY-der shon fer-PLANT',use:'Polite way to decline - "leider" keeps it friendly',lv:'A2'},
+{id:'sc3',t:'social',de:'Prost!',en:'Cheers!',ph:'prohst',use:'Absolutely essential at any gathering. Make eye contact!',lv:'A1'},
+{id:'sc4',t:'social',de:'Das klingt gut!',en:'That sounds good!',ph:'das klingt goot',use:'Agreeing to a plan - short and enthusiastic',lv:'A1'},
+{id:'sc5',t:'social',de:'Ich lade dich ein!',en:"It's on me! / My treat!",ph:'ikh LA-deh dikh eyn',use:'Offering to pay - a generous and appreciated phrase!',lv:'A2'},
+{id:'sc6',t:'social',de:'Zahlen wir halbe-halbe?',en:'Shall we split it 50/50?',ph:'TSA-len veer HAL-beh-HAL-beh',use:'Splitting bills with friends - Germans are usually fair about this',lv:'A2'},
+{id:'sc7',t:'social',de:'Ich freue mich schon darauf!',en:"I'm already looking forward to it!",ph:'ikh FROY-eh mikh shon da-ROWF',use:'Showing genuine excitement - sounds very natural and warm',lv:'A2'},
+{id:'sc8',t:'social',de:'Wann fängt es an?',en:'When does it start?',ph:'van fengt es an',use:'For any event, party, film - very versatile',lv:'A1'},
+{id:'sc9',t:'social',de:"Wie war's?",en:'How was it?',ph:'vee vars',use:'After someone comes back from an event - very casual short form',lv:'A1'},
+{id:'sc10',t:'social',de:'Das war mega lustig!',en:'That was really funny / so fun!',ph:'das var MAY-ga LOO-stikh',use:'"Mega" is very common in German casual speech - like "so" in English',lv:'A1'},
+{id:'sc11',t:'social',de:'Ich kenne da ein gutes Restaurant.',en:'I know a good restaurant there.',ph:'ikh KEN-eh da eyn GOO-tes res-taw-RANT',use:'Suggesting a place - "da" means "there" in that area',lv:'A2'},
+{id:'sc12',t:'social',de:'Bist du schon mal in München gewesen?',en:'Have you ever been to Munich?',ph:'bist doo shon mal in MÜN-khen geh-VEY-zen',use:'"Schon mal" = ever/before. Great conversation starter!',lv:'A2'},
+{id:'em1',t:'emergency',de:'Hilfe!',en:'Help!',ph:'HIL-feh',use:"Shout clearly and loudly - don't hesitate",lv:'A1'},
+{id:'em2',t:'emergency',de:'Rufen Sie bitte die Polizei!',en:'Please call the police!',ph:'ROO-fen zee BI-teh dee po-li-TSEY',use:'Police: 110 | Fire & Ambulance: 112',lv:'A1'},
+{id:'em3',t:'emergency',de:'Ich brauche einen Krankenwagen.',en:'I need an ambulance.',ph:'ikh BROW-kheh EYE-nen KRAN-ken-va-gen',use:'Emergency: 112 - works all over EU!',lv:'A1'},
+{id:'em4',t:'emergency',de:'Es hat einen Unfall gegeben.',en:'There has been an accident.',ph:'es hat EYE-nen OON-fall geh-GAY-ben',use:'Reporting an accident to emergency services',lv:'A2'},
+{id:'em5',t:'emergency',de:'Ich habe meinen Ausweis verloren.',en:"I've lost my ID card.",ph:'ikh HA-beh my-nen OWS-vys fer-LO-ren',use:'Report to nearest police station (Polizeiwache) immediately',lv:'A2'},
+{id:'em6',t:'emergency',de:'Mein Handy wurde gestohlen.',en:'My phone was stolen.',ph:'myne HAN-dee VOOR-deh geh-SHTO-len',use:'File a report (Anzeige) at the police station - needed for insurance',lv:'A2'},
+{id:'em7',t:'emergency',de:'Ich fühle mich unwohl.',en:'I feel unwell / faint.',ph:'ikh FÜ-leh mikh OON-vohl',use:"When you need help urgently but it's not immediately life-threatening",lv:'A2'},
+{id:'em8',t:'emergency',de:'Wo ist das nächste Krankenhaus?',en:'Where is the nearest hospital?',ph:'vo ist dee NAEKH-ste KRAN-ken-hows',use:'For serious injuries - for minor things go to Arztpraxis first',lv:'A1'},
+{id:'em9',t:'emergency',de:'Ich habe meine Tasche irgendwo liegen lassen.',en:'I left my bag somewhere.',ph:'ikh HA-beh my-neh TASH-eh EER-gent-vo LEE-gen LAS-en',use:'Lost property - try Fundbüro (lost and found) at station',lv:'B1'},
+{id:'em10',t:'emergency',de:'Bitte rufen Sie sofort einen Arzt.',en:'Please call a doctor immediately.',ph:'BI-teh ROO-fen zee zo-FORT EYE-nen artst',use:'"Sofort" = immediately/right away - signals urgency',lv:'A2'},
+{id:'ph1',t:'phone',de:'Können Sie bitte Ihren Namen buchstabieren?',en:'Could you please spell your name?',ph:'KUH-nen zee BI-teh EE-ren NA-men BOOKH-shta-bee-ren',use:'On the phone or filling in forms - very important in Germany!',lv:'A2'},
+{id:'ph2',t:'phone',de:'Ich rufe wegen eines Termins an.',en:"I'm calling about an appointment.",ph:'ikh ROO-feh VAY-gen EYE-nes ter-MEENS an',use:'Opening line when calling a doctor/office',lv:'A2'},
+{id:'ph3',t:'phone',de:'Ich rufe später zurück.',en:"I'll call back later.",ph:'ikh ROO-feh SHPAY-ter tsoo-RÜCK',use:"When you reach voicemail or it's a bad time",lv:'A2'},
+{id:'ph4',t:'phone',de:'Wie ist das WLAN-Passwort?',en:'What is the WiFi password?',ph:'vee ist das VAY-lan PAS-vort',use:'Essential question in every café, hotel, and new home!',lv:'A1'},
+{id:'ph5',t:'phone',de:'Ich habe keine Verbindung.',en:'I have no connection.',ph:'ikh HA-beh KY-neh fer-BIN-doong',use:'No signal, no WiFi, or no internet - very universal',lv:'A2'},
+{id:'ph6',t:'phone',de:'Können Sie mir Ihre Nummer geben?',en:'Can you give me your number?',ph:'KUH-nen zee meer EE-reh NOO-mer GAY-ben',use:"Polite request for someone's phone number",lv:'A2'},
+{id:'ph7',t:'phone',de:'Das Handy hat keinen Akku mehr.',en:'The phone has no battery left.',ph:'das HAN-dee hat KY-nen AK-oo mehr',use:'"Akku" = battery - very common complaint!',lv:'A2'},
+{id:'ph8',t:'phone',de:'Darf ich hier kurz aufladen?',en:'May I charge my phone briefly here?',ph:'darf ikh heer koorz OWF-la-den',use:'At a café, shop, or office - "kurz" makes it sound polite',lv:'A2'},
+{id:'ph9',t:'phone',de:'Können Sie das noch mal schicken?',en:'Can you send that again?',ph:'KUH-nen zee das nokh mal SHI-ken',use:"When a message or file wasn't received",lv:'A2'},
+{id:'ph10',t:'phone',de:'Ich bin gerade schlecht erreichbar.',en:"I'm currently hard to reach.",ph:'ikh bin geh-RA-deh shlekht er-REKH-bar',use:'In your out-of-office or to explain unavailability',lv:'B1'},
+{id:'tm1',t:'time',de:'Wie spät ist es?',en:'What time is it?',ph:'vee shpeyt ist es',use:'Asking the time - also "Wie viel Uhr ist es?"',lv:'A1'},
+{id:'tm2',t:'time',de:'Es ist halb drei.',en:'It\'s half past two. (lit: "half three")',ph:'es ist halb dry',use:'CAREFUL: "halb drei" = 2:30, NOT 3:30! Germans count to the next hour',lv:'A1'},
+{id:'tm3',t:'time',de:'Wann haben Sie geöffnet?',en:'When are you open?',ph:'van HA-ben zee geh-UHF-net',use:'Calling a shop or office - also "Bis wann?" (Until when?)',lv:'A1'},
+{id:'tm4',t:'time',de:'Das kostet fünfzehn Euro fünfzig.',en:'That costs fifteen euros fifty.',ph:'das KOS-tet FÜNF-tseyn OY-ro FÜNF-tsikh',use:'Prices - practice numbers 1-100, they come up constantly',lv:'A1'},
+{id:'tm5',t:'time',de:'Ich brauche das bis Freitag.',en:'I need this by Friday.',ph:'ikh BROW-kheh das bis FRY-tahg',use:'"Bis" = by/until - great for deadlines',lv:'A2'},
+{id:'tm6',t:'time',de:'Können wir auf nächste Woche verschieben?',en:'Can we move this to next week?',ph:'KUH-nen veer owf NAEKH-ste VO-kheh fer-SHEE-ben',use:'Rescheduling anything - very practical',lv:'A2'},
+{id:'tm7',t:'time',de:'Ich bin in zwanzig Minuten da.',en:"I'll be there in twenty minutes.",ph:'ikh bin in TSVAN-tsikh mi-NOO-ten da',use:'Running late - swap the number as needed',lv:'A2'},
+{id:'tm8',t:'time',de:'Der Termin ist am Donnerstag um zehn Uhr.',en:'The appointment is on Thursday at ten.',ph:'dair ter-MEEN ist am DON-ers-tahg oom tseyn oor',use:'Confirming appointments - practice days and numbers!',lv:'A1'},
+{id:'tm9',t:'time',de:'Wie lange dauert das noch?',en:'How much longer will this take?',ph:'vee LANG-eh DOW-ert das nokh',use:'Waiting in a queue, at the doctor, in traffic',lv:'A2'},
+{id:'tm10',t:'time',de:'Ich bin pünktlich.',en:'I\'m on time / punctual.',ph:'ikh bin PÜNKT-likh',use:'Germans take punctuality very seriously - being on time is expected!',lv:'A1'},
+{id:'fe1',t:'feelings',de:'Ich finde das gut.',en:'I think that\'s good / I like that.',ph:'ikh FIN-deh das goot',use:'"Ich finde" is a great opinion starter - also: nicht so gut, okay',lv:'A1'},
+{id:'fe2',t:'feelings',de:'Das gefällt mir.',en:'I like that. (lit: That pleases me)',ph:'das geh-FELT meer',use:'Natural way to say you like something - NOT "Ich mag das" which sounds cold',lv:'A1'},
+{id:'fe3',t:'feelings',de:'Das ist mir egal.',en:"I don't mind / I don't care.",ph:'das ist meer EH-gal',use:'Neutral response - NOT rude! Very common in everyday speech',lv:'A1'},
+{id:'fe4',t:'feelings',de:'Ich bin total müde.',en:"I'm completely exhausted.",ph:'ikh bin to-TAL MÜ-deh',use:'"Total" is used like "completely/totally" in German casual speech',lv:'A1'},
+{id:'fe5',t:'feelings',de:'Das nervt mich.',en:'That annoys/bothers me.',ph:'das nerfft mikh',use:'Common frustration expression - also: "Das stört mich"',lv:'A2'},
+{id:'fe6',t:'feelings',de:'Ich bin gespannt!',en:"I'm excited / curious about it!",ph:'ikh bin geh-SHPANT',use:'Like waiting for a result or looking forward to something',lv:'A2'},
+{id:'fe7',t:'feelings',de:'Das macht mir Spaß.',en:"I enjoy that / That's fun.",ph:'das makht meer shpas',use:'"Spaß machen" = to be fun - Spaß = fun/joy',lv:'A2'},
+{id:'fe8',t:'feelings',de:'Ich sehe das anders.',en:'I see it differently.',ph:'ikh ZAY-eh das AN-ders',use:'Polite way to disagree - much softer than "Das stimmt nicht!"',lv:'B1'},
+{id:'fe9',t:'feelings',de:'Das ist wirklich schade.',en:"That's really a shame / pity.",ph:'das ist VIRK-likh SHA-deh',use:'Expressing disappointment - "Schade!" alone also works',lv:'A2'},
+{id:'fe10',t:'feelings',de:'Das kenne ich gar nicht.',en:"I don't know that at all.",ph:'das KEN-eh ikh gar nikht',use:'"Gar nicht" = not at all - intensifies the negation',lv:'A2'},
+{id:'fe11',t:'feelings',de:'Das wusste ich nicht.',en:"I didn't know that.",ph:'das VOOS-teh ikh nikht',use:'When you learn something new - simple and natural',lv:'A2'},
+{id:'fe12',t:'feelings',de:'Ich bin damit nicht einverstanden.',en:"I don't agree with that.",ph:'ikh bin da-MIT nikht eyn-fer-SHTAN-den',use:'Formal disagreement - more polite in formal situations than "Nein"',lv:'B1'},
+{id:'ro1',t:'routine',de:'Ich stehe um sieben Uhr auf.',en:'I get up at seven o\'clock.',ph:'ikh SHTAY-eh oom ZEE-ben oor OWF',use:'Using "aufstehen" (to get up) - separable verb!',lv:'A1'},
+{id:'ro2',t:'routine',de:'Ich fahre mit der S-Bahn zur Arbeit.',en:'I go to work by S-Bahn.',ph:'ikh FA-reh mit dair ES-ban tsoor AR-byte',use:'Swap transport: U-Bahn, Bus, Straßenbahn, Fahrrad, Auto',lv:'A1'},
+{id:'ro3',t:'routine',de:'Ich koche abends gerne.',en:'I like cooking in the evenings.',ph:'ikh KO-kheh AH-bents GER-neh',use:'"Gerne" after the verb = I like to do it - very natural',lv:'A2'},
+{id:'ro4',t:'routine',de:'Ich gehe um elf Uhr schlafen.',en:'I go to sleep at eleven.',ph:'ikh GAY-eh oom elf oor SHLA-fen',use:'"Schlafen gehen" = to go to sleep',lv:'A1'},
+{id:'ro5',t:'routine',de:'Am Wochenende gehe ich gerne raus.',en:'At the weekend I like to go out.',ph:'am VO-khen-en-deh GAY-eh ikh GER-neh rows',use:'"Rausgehen" = going outside - very common German phrase',lv:'A2'},
+{id:'ro6',t:'routine',de:'Ich lerne jeden Tag ein bisschen Deutsch.',en:'I study a little German every day.',ph:'ikh LER-neh YAY-den tahg eyn BIS-khen doytsh',use:'Your daily habit! "Jeden Tag" = every day, "ein bisschen" = a little',lv:'A1'},
+{id:'ro7',t:'routine',de:'Ich treffe mich manchmal mit Freunden.',en:'I sometimes meet up with friends.',ph:'ikh TREF-eh mikh MANKH-mal mit FROY-nden',use:'"Sich treffen mit" = to meet with someone',lv:'A2'},
+{id:'ro8',t:'routine',de:'Was machst du in deiner Freizeit?',en:'What do you do in your free time?',ph:'vas makhst doo in DY-ner FRY-tseyt',use:'Great conversation starter - "Freizeit" = free/leisure time',lv:'A2'},
+{id:'ro9',t:'routine',de:'Ich frühstücke meistens zu Hause.',en:'I usually have breakfast at home.',ph:'ikh FRÜH-shtü-keh MYS-tens tsoo HOW-zeh',use:'"Meistens" = usually/mostly - very useful frequency word',lv:'A2'},
+{id:'ro10',t:'routine',de:'Ich muss noch einkaufen gehen.',en:'I still need to go shopping.',ph:'ikh moos nokh EYN-kow-fen GAY-en',use:'"Noch" = still/yet - adds a sense of something left to do',lv:'A2'},
+{id:'wt1',t:'weather',de:'Heute ist es schön.',en:'Today is nice weather.',ph:'HOY-teh ist es shun',use:'Most frequent small talk opener in Germany!',lv:'A1'},
+{id:'wt2',t:'weather',de:'Es regnet schon wieder!',en:"It's raining again!",ph:'es REG-net shon VEE-der',use:'"Schon wieder" = yet again - Germany feels this deeply',lv:'A1'},
+{id:'wt3',t:'weather',de:'Es ist ganz schön kalt heute.',en:"It's quite cold today.",ph:'es ist gants shun kalt HOY-teh',use:'"Ganz schön" = quite/pretty - adds emphasis without exaggerating',lv:'A1'},
+{id:'wt4',t:'weather',de:'Typisch deutsches Wetter!',en:'Typical German weather!',ph:'TÜ-pish DOYT-shes VET-er',use:'Bonding phrase - Germans say this all the time, usually ironically',lv:'A1'},
+{id:'wt5',t:'weather',de:'Wird es morgen besser?',en:'Will it be better tomorrow?',ph:'vird es MOR-gen BES-er',use:'Optimism! Check "Wetter.com" or "wetteronline.de"',lv:'A2'},
+{id:'wt6',t:'weather',de:'Ich mag den Sommer lieber.',en:'I prefer the summer.',ph:'ikh mahg den ZO-mer LEE-ber',use:'"Lieber" = prefer - e.g. "Ich trinke lieber Kaffee als Tee"',lv:'A2'},
+{id:'wt7',t:'weather',de:'Hast du was vor am Wochenende?',en:'Do you have anything planned for the weekend?',ph:'hast doo vas for am VO-khen-en-deh',use:'Classic Friday small talk - "was vorhaben" = to have plans',lv:'A2'},
+{id:'wt8',t:'weather',de:'Wie war dein Urlaub?',en:'How was your holiday?',ph:'vee var dyne OOR-lowb',use:'Great conversation starter when someone returns from vacation',lv:'A1'},
+{id:'wt9',t:'weather',de:'Ich war noch nie auf dem Weihnachtsmarkt.',en:"I've never been to a Christmas market.",ph:'ikh var nokh nee owf dem VYE-nakhts-markt',use:'"Noch nie" = never before - Weihnachtsmarkt is a must in Germany!',lv:'A2'},
+{id:'wt10',t:'weather',de:'Hast du die Nachrichten gehört?',en:'Did you hear the news?',ph:'hast doo dee NAKH-rikh-ten geh-HURT',use:'Starting a conversation about current events',lv:'A2'},
+];
+
+const PAT_CATS=[
+{id:'ordering',label:'Ordering & Requesting',icon:'🛎️'},
+{id:'location',label:'Location',icon:'📍'},
+{id:'needs',label:'Needs & Wants',icon:'💡'},
+{id:'time',label:'Time & Duration',icon:'⏰'},
+{id:'problems',label:'Problems',icon:'⚠️'},
+{id:'feelings',label:'Feelings & States',icon:'💭'},
+{id:'past',label:'Past Tense',icon:'📖'},
+{id:'future',label:'Future & Plans',icon:'🔮'},
+{id:'opinion',label:'Opinions',icon:'💬'},
+{id:'polite',label:'Being Polite',icon:'🤝'},
+];
+
+const PATTERNS=[
+{id:'p1',cat:'ordering',template:'Ich hätte gern + [etwas].',meaning:'"I would like [something]" - the most natural polite way to order or request',examples:[{de:'Ich hätte gern einen Kaffee.',en:"I'd like a coffee."},{de:'Ich hätte gern das Schnitzel.',en:"I'd like the schnitzel."},{de:'Ich hätte gern einen Termin.',en:"I'd like an appointment."}]},
+{id:'p2',cat:'ordering',template:'Einmal [etwas], bitte.',meaning:'"One [something], please" - how Germans naturally place orders',examples:[{de:'Einmal die Suppe, bitte.',en:'One soup, please.'},{de:'Einmal hin und zurück, bitte.',en:'One return ticket, please.'},{de:'Einmal das Tagesgericht, bitte.',en:'One daily special, please.'}]},
+{id:'p3',cat:'ordering',template:'Können Sie [Verb]?',meaning:'"Can you [verb]?" - polite formal request using Sie',examples:[{de:'Können Sie das wiederholen?',en:'Can you repeat that?'},{de:'Können Sie langsamer sprechen?',en:'Can you speak more slowly?'},{de:'Können Sie mir helfen?',en:'Can you help me?'}]},
+{id:'p4',cat:'ordering',template:'Kannst du [Verb]? (informal)',meaning:'"Can you [verb]?" - casual request using du',examples:[{de:'Kannst du mir das erklären?',en:'Can you explain that to me?'},{de:'Kannst du das schicken?',en:'Can you send that?'},{de:'Kannst du kurz warten?',en:'Can you wait a moment?'}]},
+{id:'p5',cat:'ordering',template:'Ich möchte [Verb/Nomen].',meaning:'"I would like to [verb] / [noun]" - slightly more formal than hätte gern',examples:[{de:'Ich möchte ein Konto eröffnen.',en:"I'd like to open an account."},{de:'Ich möchte mich anmelden.',en:"I'd like to register."},{de:'Ich möchte kündigen.',en:"I'd like to give notice."}]},
+{id:'p6',cat:'location',template:'Wo ist [Nomen]?',meaning:'"Where is [noun]?" - the most basic location question',examples:[{de:'Wo ist die Toilette?',en:'Where is the toilet?'},{de:'Wo ist das Finanzamt?',en:'Where is the tax office?'},{de:'Wo ist die nächste Apotheke?',en:'Where is the nearest pharmacy?'}]},
+{id:'p7',cat:'location',template:'Wo finde ich [Nomen]?',meaning:'"Where can I find [noun]?" - more natural in shops and large spaces',examples:[{de:'Wo finde ich die Backwaren?',en:'Where can I find the bakery products?'},{de:'Wo finde ich einen Arzt?',en:'Where can I find a doctor?'},{de:'Wo finde ich das Büro?',en:'Where can I find the office?'}]},
+{id:'p8',cat:'location',template:'Wie komme ich zu [Ort]?',meaning:'"How do I get to [place]?" - asking for directions',examples:[{de:'Wie komme ich zum Bahnhof?',en:'How do I get to the station?'},{de:'Wie komme ich zur Apotheke?',en:'How do I get to the pharmacy?'},{de:'Wie komme ich zu diesem Büro?',en:'How do I get to this office?'}]},
+{id:'p9',cat:'needs',template:'Ich brauche [Nomen].',meaning:'"I need [noun]" - direct and clear statement of need',examples:[{de:'Ich brauche einen Arzt.',en:'I need a doctor.'},{de:'Ich brauche mehr Zeit.',en:'I need more time.'},{de:'Ich brauche Hilfe.',en:'I need help.'}]},
+{id:'p10',cat:'needs',template:'Ich suche [Nomen].',meaning:'"I\'m looking for [noun]" - searching or seeking something',examples:[{de:'Ich suche die Kasse.',en:"I'm looking for the checkout."},{de:'Ich suche eine Wohnung.',en:"I'm looking for a flat."},{de:'Ich suche Arbeit.',en:"I'm looking for work."}]},
+{id:'p11',cat:'needs',template:'Haben Sie [Nomen]?',meaning:'"Do you have [noun]?" - checking availability',examples:[{de:'Haben Sie Vegetarisches?',en:'Do you have vegetarian options?'},{de:'Haben Sie das in Blau?',en:'Do you have that in blue?'},{de:'Haben Sie noch freie Termine?',en:'Do you still have free appointments?'}]},
+{id:'p12',cat:'time',template:'Seit [Zeit] + Verb.',meaning:'"For [time] / Since [time]" - how long something has been happening',examples:[{de:'Ich wohne seit drei Jahren hier.',en:"I've been living here for three years."},{de:'Ich lerne seit sechs Monaten Deutsch.',en:"I've been learning German for six months."},{de:'Seit wann haben Sie Schmerzen?',en:'Since when have you had pain?'}]},
+{id:'p13',cat:'time',template:'Um [Uhrzeit] Uhr.',meaning:'"At [time] o\'clock" - stating when something happens',examples:[{de:'Der Zug fährt um 9 Uhr ab.',en:'The train departs at 9.'},{de:'Ich bin um halb drei fertig.',en:"I'm done at 2:30."},{de:'Das Geschäft öffnet um 8 Uhr.',en:'The shop opens at 8.'}]},
+{id:'p14',cat:'time',template:'Bis [Zeitpunkt/Tag].',meaning:'"By / Until [time/day]" - deadlines and end points',examples:[{de:'Ich brauche das bis Freitag.',en:'I need this by Friday.'},{de:'Bis nächste Woche!',en:'Until next week!'},{de:'Offen bis 20 Uhr.',en:'Open until 8pm.'}]},
+{id:'p15',cat:'problems',template:'[Etwas] funktioniert nicht.',meaning:'"[Something] isn\'t working" - reporting technical problems',examples:[{de:'Die Heizung funktioniert nicht.',en:"The heating isn't working."},{de:'Das Internet funktioniert nicht.',en:"The internet isn't working."},{de:'Die App funktioniert nicht.',en:"The app isn't working."}]},
+{id:'p16',cat:'problems',template:'[Etwas] ist kaputt.',meaning:'"[Something] is broken" - simple way to say something broke',examples:[{de:'Der Aufzug ist kaputt.',en:'The lift is broken.'},{de:'Mein Handy ist kaputt.',en:'My phone is broken.'},{de:'Das Schloss ist kaputt.',en:'The lock is broken.'}]},
+{id:'p17',cat:'problems',template:'Ich habe [Nomen] verloren.',meaning:'"I have lost [noun]" - reporting lost items',examples:[{de:'Ich habe meinen Schlüssel verloren.',en:"I've lost my key."},{de:'Ich habe mein Ticket verloren.',en:"I've lost my ticket."},{de:'Ich habe meine Geldbörse verloren.',en:"I've lost my wallet."}]},
+{id:'p18',cat:'problems',template:'Es gibt ein Problem mit [Nomen].',meaning:'"There is a problem with [noun]" - flagging an issue formally',examples:[{de:'Es gibt ein Problem mit dem Wasser.',en:'There is a problem with the water.'},{de:'Es gibt ein Problem mit meiner Rechnung.',en:'There is a problem with my bill.'},{de:'Es gibt ein Problem mit der Buchung.',en:'There is a problem with the booking.'}]},
+{id:'p19',cat:'feelings',template:'Ich bin [Adjektiv].',meaning:'"I am [adjective]" - stating your condition or state',examples:[{de:'Ich bin müde.',en:"I'm tired."},{de:'Ich bin krank.',en:"I'm sick."},{de:'Ich bin gespannt.',en:"I'm excited/curious."}]},
+{id:'p20',cat:'feelings',template:'Mir ist [Adjektiv].',meaning:'"I feel [adjective]" - physical feelings (different from Ich bin!)',examples:[{de:'Mir ist kalt.',en:'I feel cold.'},{de:'Mir ist schwindelig.',en:'I feel dizzy.'},{de:'Mir ist es hier zu laut.',en:"It's too loud for me here."}]},
+{id:'p21',cat:'feelings',template:'Ich habe [Körperteil]schmerzen.',meaning:'"I have [body part] pain" - health complaints',examples:[{de:'Ich habe Kopfschmerzen.',en:'I have a headache.'},{de:'Ich habe Bauchschmerzen.',en:'I have stomach ache.'},{de:'Ich habe Rückenschmerzen.',en:'I have back pain.'}]},
+{id:'p22',cat:'feelings',template:'Das macht mir [Spaß/Sorgen/Angst].',meaning:'"That gives me [fun/worry/fear]"',examples:[{de:'Das macht mir Spaß.',en:"That's fun / I enjoy that."},{de:'Das macht mir Sorgen.',en:'That worries me.'},{de:'Das macht mir Angst.',en:'That scares me.'}]},
+{id:'p23',cat:'past',template:'Ich habe [Verb Partizip].',meaning:'"I have [done something]" - Perfekt tense, most common past in spoken German',examples:[{de:'Ich habe eingekauft.',en:'I went shopping.'},{de:'Ich habe das nicht gewusst.',en:"I didn't know that."},{de:'Ich habe einen Termin gemacht.',en:'I made an appointment.'}]},
+{id:'p24',cat:'past',template:'Ich war [Ort / Adjektiv].',meaning:'"I was [place/adjective]" - simple past of "sein" (to be)',examples:[{de:'Ich war beim Arzt.',en:'I was at the doctor.'},{de:'Ich war gestern krank.',en:'I was sick yesterday.'},{de:'Ich war noch nie in Bayern.',en:"I've never been to Bavaria."}]},
+{id:'p25',cat:'past',template:'Gestern / Letzte Woche [Satz].',meaning:'"Yesterday / Last week [sentence]" - time markers for the past',examples:[{de:'Gestern habe ich Deutsch gelernt.',en:'Yesterday I studied German.'},{de:'Letzte Woche war ich in München.',en:'Last week I was in Munich.'},{de:'Gestern hat es geregnet.',en:'Yesterday it rained.'}]},
+{id:'p26',cat:'future',template:'Ich werde [Verb].',meaning:'"I will [verb]" - future plans and promises',examples:[{de:'Ich werde das erledigen.',en:'I will take care of it.'},{de:'Ich werde pünktlich sein.',en:'I will be on time.'},{de:'Ich werde zurückrufen.',en:'I will call back.'}]},
+{id:'p27',cat:'future',template:'Ich plane, [Verb] zu [Infinitiv].',meaning:'"I\'m planning to [verb]" - stating future intentions',examples:[{de:'Ich plane, nächsten Monat zu reisen.',en:"I'm planning to travel next month."},{de:'Ich plane, einen Deutschkurs zu machen.',en:"I'm planning to do a German course."},{de:'Ich plane, umzuziehen.',en:"I'm planning to move."}]},
+{id:'p28',cat:'future',template:'Wollen wir [Verb]?',meaning:'"Shall we [verb]?" - suggesting an activity together',examples:[{de:'Wollen wir essen gehen?',en:'Shall we go eat?'},{de:'Wollen wir das besprechen?',en:'Shall we discuss that?'},{de:'Wollen wir einen Kaffee trinken?',en:'Shall we have a coffee?'}]},
+{id:'p29',cat:'opinion',template:'Ich finde [Nomen] [Adjektiv].',meaning:'"I find [thing] [adjective]" - expressing your opinion',examples:[{de:'Ich finde das interessant.',en:'I find that interesting.'},{de:'Ich finde das System kompliziert.',en:'I find the system complicated.'},{de:'Ich finde das sehr hilfreich.',en:'I find that very helpful.'}]},
+{id:'p30',cat:'opinion',template:'Ich mag [Nomen] lieber als [Nomen].',meaning:'"I prefer [noun] to [noun]" - comparing preferences',examples:[{de:'Ich mag Sommer lieber als Winter.',en:'I prefer summer to winter.'},{de:'Ich mag Kaffee lieber als Tee.',en:'I prefer coffee to tea.'},{de:'Ich mag die U-Bahn lieber als den Bus.',en:'I prefer the U-Bahn to the bus.'}]},
+{id:'p31',cat:'opinion',template:'Das gefällt mir [sehr / nicht so gut].',meaning:'"I [really] like / don\'t like that" - natural reaction phrase',examples:[{de:'Das gefällt mir sehr.',en:'I really like that.'},{de:'Das gefällt mir nicht so gut.',en:"I don't like that so much."},{de:'Das Design gefällt mir total.',en:'I really love the design.'}]},
+{id:'p32',cat:'polite',template:'Entschuldigung, [Frage/Bitte].',meaning:'"Excuse me, [question/request]" - universal polite opener',examples:[{de:'Entschuldigung, wo ist der Ausgang?',en:'Excuse me, where is the exit?'},{de:'Entschuldigung, ist das Ihr Platz?',en:'Excuse me, is that your seat?'},{de:'Entschuldigung, können Sie mir helfen?',en:'Excuse me, can you help me?'}]},
+{id:'p33',cat:'polite',template:'Es tut mir leid, aber [Satz].',meaning:'"I\'m sorry, but [sentence]" - softening bad news or refusals',examples:[{de:'Es tut mir leid, aber das geht nicht.',en:"I'm sorry, but that won't work."},{de:'Es tut mir leid, aber ich bin schon verplant.',en:"I'm sorry, but I'm already busy."},{de:"Es tut mir leid, aber ich verstehe das nicht.",en:"I'm sorry, but I don't understand that."}]},
+{id:'p34',cat:'polite',template:'Darf ich [Verb]?',meaning:'"May I [verb]?" - asking permission politely',examples:[{de:'Darf ich kurz vorbeikommen?',en:'May I come by briefly?'},{de:'Darf ich hier parken?',en:'May I park here?'},{de:'Darf ich ein Foto machen?',en:'May I take a photo?'}]},
+{id:'p35',cat:'polite',template:'Wäre es möglich, [Verb] zu [Infinitiv]?',meaning:'"Would it be possible to [verb]?" - very polite formal request',examples:[{de:'Wäre es möglich, früher zu kommen?',en:'Would it be possible to come earlier?'},{de:'Wäre es möglich, das zu verschieben?',en:'Would it be possible to postpone this?'},{de:'Wäre es möglich, eine Quittung zu bekommen?',en:'Would it be possible to get a receipt?'}]},
+{id:'p36',cat:'polite',template:'Ich wäre Ihnen dankbar, wenn [Satz].',meaning:'"I would be grateful if [sentence]" - very formal polite request',examples:[{de:'Ich wäre Ihnen dankbar, wenn Sie das prüfen könnten.',en:'I would be grateful if you could check that.'},{de:'Ich wäre Ihnen dankbar, wenn Sie antworten würden.',en:'I would be grateful if you would reply.'},{de:'Ich wäre Ihnen dankbar für eine schnelle Rückmeldung.',en:'I would be grateful for a quick response.'}]},
+{id:'p37',cat:'ordering',template:'Bitte [Verb] Sie [Nomen].',meaning:'"Please [verb] [noun]" - formal imperative request',examples:[{de:'Bitte rufen Sie mich zurück.',en:'Please call me back.'},{de:'Bitte schicken Sie die Unterlagen.',en:'Please send the documents.'},{de:'Bitte sprechen Sie langsamer.',en:'Please speak more slowly.'}]},
+{id:'p38',cat:'location',template:'Gibt es [Nomen] in der Nähe?',meaning:'"Is there [noun] nearby?" - finding things near you',examples:[{de:'Gibt es eine Apotheke in der Nähe?',en:'Is there a pharmacy nearby?'},{de:'Gibt es einen Parkplatz in der Nähe?',en:'Is there a car park nearby?'},{de:'Gibt es einen Geldautomaten hier?',en:'Is there a cash machine here?'}]},
+{id:'p39',cat:'past',template:'Ich habe noch nie [Verb Partizip].',meaning:'"I have never [done something]" - expressing lack of experience',examples:[{de:'Ich habe noch nie Sauerkraut gegessen.',en:"I've never eaten Sauerkraut."},{de:'Ich habe noch nie in Deutschland gearbeitet.',en:"I've never worked in Germany."},{de:'Ich habe noch nie Ski gefahren.',en:"I've never been skiing."}]},
+{id:'p40',cat:'future',template:'Sobald [Satz], werde ich [Verb].',meaning:'"As soon as [sentence], I will [verb]" - conditional future',examples:[{de:'Sobald ich Zeit habe, rufe ich an.',en:"As soon as I have time, I'll call."},{de:'Sobald das fertig ist, schicke ich es.',en:"As soon as it's done, I'll send it."},{de:'Sobald ich weiß, sage ich Bescheid.',en:"As soon as I know, I'll let you know."}]},
+];
+
+// ══════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════
+const SKEY = 'dd_v4';
+const SKEY_OLD = 'dd_clean_v1';
+const SYNC_KEY_LSKEY = 'dd_sync_key';
+const JSONBIN_API = 'https://api.jsonbin.io/v3';
+const JSONBIN_MASTER_KEY = '$2a$10$eujMjbLMJaFNJhRZ3XMqAupZi3MvJuNDV4XPd7KF8l.SJ9k.e5OXi';
+let DB = { learned:new Set(), favorites:new Set(), understood:new Set(), streak:0, lastStudy:null, dailyGoal:10, dailyQueue:[], dailyQueueDate:null, dailyLearned:new Set(), history:{}, srs:{} };
+let SYNC = { binId: null, syncing: false, lastSync: null, status: 'idle' }; // idle | syncing | ok | error
+
+function dbToObj() {
+  return {
+    learned:[...DB.learned], favorites:[...DB.favorites], understood:[...DB.understood],
+    streak:DB.streak, lastStudy:DB.lastStudy, dailyGoal:DB.dailyGoal,
+    dailyQueue:DB.dailyQueue, dailyQueueDate:DB.dailyQueueDate,
+    dailyLearned:[...DB.dailyLearned], history:DB.history, srs:DB.srs
+  };
+}
+function objToDB(p) {
+  DB.learned = new Set(p.learned||[]); DB.favorites = new Set(p.favorites||[]); DB.understood = new Set(p.understood||[]);
+  DB.streak = p.streak||0; DB.lastStudy = p.lastStudy||null; DB.dailyGoal = p.dailyGoal||10;
+  DB.dailyQueue = p.dailyQueue||[]; DB.dailyQueueDate = p.dailyQueueDate||null;
+  DB.dailyLearned = new Set(p.dailyLearned||[]); DB.history = p.history||{};
+  DB.srs = p.srs||{};
+}
+
+// ── JSONBin helpers ──────────────────────────────────────────────
+function getSyncKey() { return localStorage.getItem(SYNC_KEY_LSKEY) || null; }
+function setSyncKey(k) { localStorage.setItem(SYNC_KEY_LSKEY, k); }
+
+async function cloudFindOrCreate() {
+  // Search for an existing 'deutsch-daily' bin under this master key
+  try {
+    const res = await fetch(`${JSONBIN_API}/b`, {
+      headers: { 'X-Master-Key': JSONBIN_MASTER_KEY }
+    });
+    if (res.ok) {
+      const d = await res.json();
+      const bins = d.result || [];
+      const existing = bins.find(b => b.snippetMeta?.name === 'deutsch-daily');
+      if (existing) return existing.record._id || existing._id;
+    }
+  } catch(e) {}
+  // None found — create one
+  return await cloudCreate();
+}
+
+async function cloudCreate() {
+  const res = await fetch(`${JSONBIN_API}/b`, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Bin-Name':'deutsch-daily', 'X-Bin-Private':'true' },
+    body: JSON.stringify(dbToObj())
+  });
+  if (!res.ok) throw new Error('create failed');
+  const d = await res.json();
+  return d.metadata.id;
+}
+
+async function cloudPush(binId) {
+  const res = await fetch(`${JSONBIN_API}/b/${binId}`, {
+    method:'PUT',
+    headers:{ 'Content-Type':'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
+    body: JSON.stringify(dbToObj())
+  });
+  if (!res.ok) throw new Error('push failed');
+}
+
+async function cloudPull(binId) {
+  const res = await fetch(`${JSONBIN_API}/b/${binId}/latest`, {
+    headers:{ 'X-Master-Key': JSONBIN_MASTER_KEY }
+  });
+  if (!res.ok) throw new Error('pull failed');
+  const d = await res.json();
+  return d.record;
+}
+
+function setSyncStatus(s, msg) {
+  SYNC.status = s;
+  const el = document.getElementById('sync-status');
+  if (!el) return; // element only exists on Stats page
+  const map = { idle:'☁️ Not synced', syncing:'🔄 Syncing…', ok:'✅ Synced', error:'❌ ' + (msg||'Offline') };
+  el.textContent = map[s] || s;
+  el.style.color = s==='ok' ? 'var(--green)' : s==='error' ? 'var(--red)' : s==='syncing' ? 'var(--blue)' : 'var(--text-3)';
+}
+
+// Debounced cloud push — waits 2s after last save before pushing
+let _syncTimer = null;
+function schedulePush() {
+  const binId = getSyncKey();
+  if (!binId) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(async () => {
+    setSyncStatus('syncing');
+    try { await cloudPush(binId); SYNC.lastSync = Date.now(); setSyncStatus('ok'); }
+    catch(e) { setSyncStatus('error'); }
+  }, 2000);
+}
+
+async function load() {
+  // 1. Load local data first for instant boot
+  try {
+    let raw = localStorage.getItem(SKEY);
+    if (!raw) raw = localStorage.getItem(SKEY_OLD);
+    if (raw) objToDB(JSON.parse(raw));
+  } catch(e) {}
+
+  let binId = getSyncKey();
+
+  // 2. No sync key yet? Auto-find or create one silently in background
+  if (!binId) {
+    try {
+      binId = await cloudFindOrCreate();
+      setSyncKey(binId);
+      SYNC.lastSync = Date.now();
+      setSyncStatus('ok');
+    } catch(e) {
+      // No internet or service unavailable — continue offline, will retry on next save
+      setSyncStatus('error', 'Offline');
+    }
+    return;
+  }
+
+  // 3. Sync key exists — pull latest from cloud and merge
+  try {
+    setSyncStatus('syncing');
+    const remote = await cloudPull(binId);
+    const localCount = DB.learned.size;
+    const remoteCount = (remote.learned||[]).length;
+    if (remoteCount >= localCount) objToDB(remote);
+    save(); // persist merged result locally
+    SYNC.lastSync = Date.now();
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus('error'); }
+}
+
+function save() {
+  const json = JSON.stringify(dbToObj());
+  try { localStorage.setItem(SKEY, json); } catch(e) {}
+  try { if (window.storage) window.storage.set(SKEY, json); } catch(e) {}
+  // If no bin yet (was offline on boot), try creating one now
+  if (!getSyncKey()) {
+    cloudFindOrCreate().then(id => { setSyncKey(id); setSyncStatus('ok'); updateSyncUI(); }).catch(()=>{});
+    return;
+  }
+  schedulePush();
+}
+function today() { return new Date().toDateString(); }
+function todayKey() { const d=new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+function updateStreak() {
+  const t = today();
+  if (DB.lastStudy === t) return;
+  const y = new Date(Date.now()-86400000).toDateString();
+  if (DB.lastStudy === y) DB.streak++; else if (DB.lastStudy !== t) DB.streak = 1;
+  DB.lastStudy = t; save();
+}
+function shuffle(a) { return [...a].sort(() => Math.random()-.5); }
+
+// ══════════════════════════════════════════════
+// SPACED REPETITION (SRS)
+// ══════════════════════════════════════════════
+const SRS_INTERVALS = [1, 3, 7, 14, 30, 60]; // days per level
+
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function addDaysISO(days) {
+  const d = new Date(Date.now() + days * 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function srsSchedule(id, gotIt) {
+  if (!DB.srs[id]) DB.srs[id] = { level: 0, nextReview: null };
+  const card = DB.srs[id];
+  if (gotIt) { card.level = Math.min(card.level + 1, SRS_INTERVALS.length - 1); }
+  else { card.level = 0; }
+  card.nextReview = addDaysISO(SRS_INTERVALS[card.level]);
+  save();
+}
+function getSrsReviewIds() {
+  const today = todayISO();
+  return Object.entries(DB.srs)
+    .filter(([id, data]) => DB.learned.has(id) && data.nextReview && data.nextReview <= today)
+    .map(([id]) => id);
+}
+function getSrsLevel(id) { return (DB.srs[id]||{}).level || 0; }
+
+// ══════════════════════════════════════════════
+// GRAMMAR TAG AUTO-DETECTION
+// ══════════════════════════════════════════════
+function grammarTag(de) {
+  const s = de.toLowerCase();
+  if (/\b(muss|müssen|kann|könn|darf|dürfen|soll|sollen|will(?!kommen|kommen)|wollen|mag(?! )|mögen|möchte|möchten|würde|würden)\b/.test(s))
+    return { t:'Modal', c:'#7C3AED', bg:'#F5F3FF' };
+  if (/\b(habe|hat|hast|haben|habt|bin|bist|ist|sind|seid|war|waren)\b/.test(s) && /\bge[a-zäöüß]{2,}(t|en)\b/.test(s))
+    return { t:'Perfekt', c:'#2563EB', bg:'#EFF6FF' };
+  if (/^(wo |wer |was |wann |wie |woher |wohin |welch|warum )/.test(s))
+    return { t:'W-Frage', c:'#EA580C', bg:'#FFF7ED' };
+  if (/\b(nicht|kein|keine|keinen|keiner|keines|keinem)\b/.test(s))
+    return { t:'Negation', c:'#DC2626', bg:'#FEF2F2' };
+  if (/\bseit\b/.test(s))
+    return { t:'seit + Dativ', c:'#D97706', bg:'#FFFBEB' };
+  return null;
+}
+function ensureDailyQueue() {
+  const t = today();
+  if (DB.dailyQueueDate === t && DB.dailyQueue.length > 0) {
+    if (DB.dailyQueue.length < DB.dailyGoal) {
+      const ex = new Set(DB.dailyQueue);
+      const more = SENTENCES.filter(s=>!DB.learned.has(s.id)&&!ex.has(s.id)).slice(0, DB.dailyGoal-DB.dailyQueue.length).map(s=>s.id);
+      DB.dailyQueue = [...DB.dailyQueue, ...more]; save();
+    }
+    return;
+  }
+  if (DB.dailyQueueDate !== t) DB.dailyLearned = new Set();
+  const pool = [...shuffle(SENTENCES.filter(s=>!DB.learned.has(s.id))), ...shuffle(SENTENCES.filter(s=>DB.learned.has(s.id)))];
+  DB.dailyQueue = pool.slice(0, DB.dailyGoal).map(s=>s.id);
+  DB.dailyQueueDate = t; save();
+}
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let V = { view:'today', topicId:null, patCat:'all', filter:'all', query:'', speaking:null, libTab:'saved' };
+function nav(view, extra) { V.view=view; if(extra) V.topicId=extra; V.filter='all'; V.query=''; render(); window.scrollTo(0,0); }
+
+// ══════════════════════════════════════════════
+// ICONS
+// ══════════════════════════════════════════════
+const ICO = {
+  speak:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
+  check:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+  star:`<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+};
+
+// ══════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════
+function render() {
+  updateHeader();
+  updateNavBtns();
+  const root = document.getElementById('root');
+  if (V.view==='today') root.innerHTML = renderToday();
+  else if (V.view==='browse' && V.topicId) root.innerHTML = renderTopic();
+  else if (V.view==='browse') root.innerHTML = renderBrowse();
+  else if (V.view==='patterns') root.innerHTML = renderPatterns();
+  else if (V.view==='saved') root.innerHTML = renderSaved();
+  else if (V.view==='stats') { root.innerHTML = renderStats(); setTimeout(updateSyncUI, 0); }
+  root.querySelectorAll('.sc,.pc').forEach((el,i) => el.style.animationDelay = i*25+'ms');
+}
+
+function updateHeader() {
+  const tot = SENTENCES.length, done = DB.learned.size, pct = tot ? Math.round(done/tot*100) : 0;
+  document.getElementById('hpf').style.width = pct+'%';
+  document.getElementById('hpl').textContent = `${done} / ${tot} learned`;
+  document.getElementById('stk-n').textContent = DB.streak;
+}
+function updateNavBtns() {
+  ['today','browse','patterns','stats'].forEach(v => {
+    const el = document.getElementById('nb-'+v);
+    if (!el) return;
+    el.className = 'nb' + (V.view===v || (V.view==='topic'&&v==='browse') ? ' on' : '');
+  });
+  const libBtn = document.getElementById('nb-library');
+  if (libBtn) libBtn.className = 'nb' + (V.view==='saved' ? ' on' : '');
+}
+
+// ─── TODAY ───────────────────────────────────
+function renderToday() {
+  ensureDailyQueue();
+  const qs = DB.dailyQueue.map(id=>SENTENCES.find(s=>s.id===id)).filter(Boolean);
+  const lt = qs.filter(s=>DB.dailyLearned.has(s.id)).length;
+  const tot = qs.length, pct = tot ? Math.round(lt/tot*100) : 0, done = lt===tot&&tot>0;
+
+  const gc = `<div class="goal-card">
+    <div class="goal-top">
+      <div><div class="goal-title">📅 Today's Practice</div><div class="goal-date">${new Date().toLocaleDateString('en-DE',{weekday:'long',day:'numeric',month:'long'})}</div></div>
+      <button class="goal-btn" onclick="openGoalModal()">Goal: ${DB.dailyGoal} ✏️</button>
+    </div>
+    <div class="goal-nums">
+      <div><div class="gnum-v" style="color:var(--green)">${lt}</div><div class="gnum-l">Learned today</div></div>
+      <div><div class="gnum-v" style="color:var(--text-3)">${tot-lt}</div><div class="gnum-l">Remaining</div></div>
+      <div><div class="gnum-v" style="color:var(--accent)">${DB.dailyGoal}</div><div class="gnum-l">Daily goal</div></div>
+      <div><div class="gnum-v" style="color:var(--blue)">${DB.learned.size}</div><div class="gnum-l">Total ever</div></div>
+    </div>
+    ${done ? `<div class="goal-complete">🎉 Daily goal complete! Come back tomorrow.</div>` : `<div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%"></div></div>`}
+  </div>`;
+
+  // SRS due-for-review section
+  const reviewIds = getSrsReviewIds();
+  const reviewSents = reviewIds.map(id=>SENTENCES.find(s=>s.id===id)).filter(Boolean);
+  const reviewSection = reviewSents.length ? (() => {
+    const ids = JSON.stringify(reviewSents.map(s=>s.id)).replace(/"/g,"'");
+    return `<div class="review-section">
+      <div class="review-section-hdr">
+        <div class="review-section-title">🔁 Due for Review <span class="review-count-badge">${reviewSents.length}</span></div>
+        <button class="review-practice-btn" onclick="startPractice({ids:${ids},isSRS:true})">Practice Now</button>
+      </div>
+      <div class="review-section-sub">These sentences are scheduled for review today - spaced repetition in action!</div>
+    </div>`;
+  })() : '';
+
+  return `${gc}
+    ${reviewSection}
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${tot} Sentences</div>
+      <div style="display:flex;gap:7px">
+        <button onclick="startPractice({ids:${JSON.stringify(qs.map(s=>s.id)).replace(/"/g,"'")}})" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🎯 Practice</button>
+        <button onclick="refreshQueue()" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;font-weight:500">🔄 New batch</button>
+      </div>
+    </div>
+    
+    ${qs.map((s,i)=>renderSentenceCard(s,i,true)).join('')}`;
+}
+
+// ─── BROWSE ──────────────────────────────────
+function renderBrowse() {
+  const topicCards = TOPICS.map(t => {
+    const tot = SENTENCES.filter(s=>s.t===t.id).length;
+    const done = SENTENCES.filter(s=>s.t===t.id&&DB.learned.has(s.id)).length;
+    const pct = tot ? Math.round(done/tot*100) : 0;
+    return `<div class="topic-card" onclick="nav('browse','${t.id}')" style="--tc:${t.color}">
+      <span class="tc-emoji">${t.emoji}</span>
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-de">${t.german}</div>
+      <div class="tc-prog"><span class="tc-count">${done}/${tot}</span><div class="tc-bar-bg"><div class="tc-bar-fill" style="width:${pct}%;background:var(--tc)"></div></div></div>
+    </div>`;
+  }).join('');
+  return `<div style="padding-top:14px">
+    <h2 class="page-title">Browse</h2>
+    <p class="page-sub">${SENTENCES.length} sentences - ${PATTERNS.length} patterns - ${TOPICS.length} topics</p>
+    <div class="topic-grid">${topicCards}</div>
+  </div>`;
+}
+
+// ─── TOPIC ───────────────────────────────────
+function renderTopic() {
+  const topic = TOPICS.find(t=>t.id===V.topicId);
+  if (!topic) return renderBrowse();
+  let sents = SENTENCES.filter(s=>s.t===V.topicId);
+  if (V.filter==='learned') sents = sents.filter(s=>DB.learned.has(s.id));
+  else if (V.filter==='unlearned') sents = sents.filter(s=>!DB.learned.has(s.id));
+  else if (V.filter==='favorites') sents = sents.filter(s=>DB.favorites.has(s.id));
+  if (V.query) { const q=V.query.toLowerCase(); sents=sents.filter(s=>s.de.toLowerCase().includes(q)||s.en.toLowerCase().includes(q)); }
+  const done = SENTENCES.filter(s=>s.t===V.topicId&&DB.learned.has(s.id)).length;
+  const tot = SENTENCES.filter(s=>s.t===V.topicId).length;
+  const allTopicIds = JSON.stringify(SENTENCES.filter(s=>s.t===V.topicId).map(s=>s.id)).replace(/"/g,"'");
+  const unlearnedTopicIds = JSON.stringify(SENTENCES.filter(s=>s.t===V.topicId&&!DB.learned.has(s.id)).map(s=>s.id)).replace(/"/g,"'");
+  const practiceTopicBtn = `<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <button onclick="startPractice({ids:${allTopicIds}})" style="flex:1;background:var(--accent);color:white;border:none;border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">🎯 Practice All ${tot}</button>
+    ${SENTENCES.filter(s=>s.t===V.topicId&&!DB.learned.has(s.id)).length>0?`<button onclick="startPractice({ids:${unlearnedTopicIds}})" style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:9px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-strong)'" onmouseout="this.style.borderColor='var(--border)'">📚 Unlearned Only (${tot-done})</button>`:''}
+  </div>`;
+  const cards = sents.length ? sents.map((s,i)=>renderSentenceCard(s,i,false)).join('') : `<div class="empty-state"><div class="empty-icon">🔍</div>No sentences match.</div>`;
+  return `<button class="back-btn" onclick="nav('browse')">← All Topics</button>
+    <div class="topic-hdr">
+      <div class="topic-hdr-em">${topic.emoji}</div>
+      <div><div class="topic-hdr-name">${topic.name}</div><div class="topic-hdr-de">${topic.german}</div>
+        <div class="topic-hdr-stats"><span class="topic-stat"><strong>${done}</strong> learned</span><span class="topic-stat"><strong>${tot-done}</strong> remaining</span></div>
+      </div>
+    </div>
+    <div class="filter-row">
+      ${['all','unlearned','learned','favorites'].map(f=>`<div class="filter-chip${V.filter===f?' on':''}" onclick="setFilter('${f}')">${f==='all'?'All':f==='unlearned'?'To Learn':f==='learned'?'✓ Learned':'⭐ Saved'}</div>`).join('')}
+    </div>
+    ${practiceTopicBtn}
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search..." value="${V.query}" oninput="setQuery(this.value)" type="text"></div>
+    
+    ${cards}`;
+}
+
+// ─── SENTENCE CARD ───────────────────────────
+function renderSentenceCard(s, i, showTopic) {
+  const lrn = DB.learned.has(s.id), fav = DB.favorites.has(s.id);
+  const topic = TOPICS.find(t=>t.id===s.t);
+  const gram = grammarTag(s.de);
+  const srsLvl = getSrsLevel(s.id);
+  const srsDots = lrn ? `<span class="srs-dots">${SRS_INTERVALS.map((_,i)=>`<span class="srs-dot${i<srsLvl?' filled':''}"></span>`).join('')}</span>` : '';
+  return `<div class="sc${lrn?' lrn':''}${fav?' fav':''}" id="sc-${s.id}">
+    <div class="sc-top">
+      ${showTopic&&topic ? `<span class="topic-label">${topic.emoji} ${topic.name}</span>` : ''}
+      <span class="lvl-tag l${s.lv}">${s.lv}</span>
+      ${gram ? `<span class="gram-tag" style="color:${gram.c};background:${gram.bg}">${gram.t}</span>` : ''}
+      ${lrn ? `<span class="lrn-badge">✓ Learned</span>${srsDots}` : ''}
+    </div>
+    <div class="sentence-de" onclick="toggleReveal('${s.id}')">${s.de}</div>
+    <div class="sentence-ph"><span class="ph-lbl">🔊</span>${s.ph}</div>
+    <div class="reveal-hint" id="hn-${s.id}">👆 Tap to reveal translation</div>
+    <div class="sentence-en hid" id="en-${s.id}" onclick="toggleReveal('${s.id}')">${s.en}</div>
+    
+    <div class="sentence-use" id="us-${s.id}" style="display:none">💬 ${s.use}</div>
+    <div class="card-actions">
+      <button class="act-btn${V.speaking===s.id?' is-playing':''} speak-btn" data-id="${s.id}" onclick="speak('${s.de.replace(/'/g,"\\'")}','${s.id}')">
+        ${ICO.speak} ${V.speaking===s.id?`<span class="pulse">Playing…</span>`:'Listen'}
+      </button>
+      <button class="act-btn${lrn?' is-learned':''}" id="lrn-btn-${s.id}" onclick="toggleLearned('${s.id}')">
+        ${ICO.check} ${lrn?'Learned':'Mark done'}
+      </button>
+      <button class="act-btn${fav?' is-fav':''}" id="fav-btn-${s.id}" onclick="toggleFav('${s.id}')">
+        ${ICO.star} ${fav?'Saved':'Save'}
+      </button>
+    </div>
+  </div>`;
+}
+
+// ─── PATTERNS ────────────────────────────────
+function renderPatterns() {
+  let pats = PATTERNS;
+  if (V.patCat !== 'all') pats = pats.filter(p=>p.cat===V.patCat);
+  if (V.query) { const q=V.query.toLowerCase(); pats=pats.filter(p=>p.template.toLowerCase().includes(q)||p.meaning.toLowerCase().includes(q)); }
+  const undCount = DB.understood.size;
+  const cards = pats.length ? pats.map((p,i)=>renderPatternCard(p,i)).join('') : `<div class="empty-state"><div class="empty-icon">🔍</div>No patterns match.</div>`;
+  return `<div style="padding-top:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+      <h2 class="page-title" style="margin-top:0">Sentence Patterns</h2>
+      <span style="font-size:12px;font-weight:500;color:var(--purple)">${undCount}/${PATTERNS.length} understood</span>
+    </div>
+    <p class="page-sub">Master these ${PATTERNS.length} patterns → build hundreds of sentences</p>
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search patterns..." value="${V.query}" oninput="setQuery(this.value)" type="text"></div>
+    <div class="filter-row">
+      <div class="filter-chip${V.patCat==='all'?' on':''}" onclick="setPatCat('all')">All</div>
+      ${PAT_CATS.map(c=>`<div class="filter-chip${V.patCat===c.id?' on':''}" onclick="setPatCat('${c.id}')">${c.icon} ${c.label}</div>`).join('')}
+    </div>
+    ${cards}
+  </div>`;
+}
+
+function renderPatternCard(p, i) {
+  const und = DB.understood.has(p.id);
+  const cat = PAT_CATS.find(c=>c.id===p.cat);
+  const tpl = p.template.replace(/\[([^\]]+)\]/g, '<span class="pat-blank">[$1]</span>');
+  return `<div class="pc${und?' und':''}" id="pc-${p.id}">
+    ${cat ? `<span class="pat-cat-tag">${cat.icon} ${cat.label}</span>` : ''}
+    <div class="pat-template">${tpl}</div>
+    <div class="pat-meaning">${p.meaning}</div>
+    <div class="pat-examples">${p.examples.map(e=>`<div class="pat-ex"><div class="pat-de">${e.de}</div><div class="pat-en">${e.en}</div></div>`).join('')}</div>
+    <div class="pat-actions">
+      <button class="act-btn${und?' is-learned':''}" onclick="toggleUnderstood('${p.id}')">
+        ${ICO.check} ${und?'Understood ✓':'Mark understood'}
+      </button>
+      <button class="act-btn speak-btn" data-id="p${p.id}" onclick="speak('${p.examples[0].de.replace(/'/g,"\\'")}','p${p.id}')">
+        ${ICO.speak} Listen
+      </button>
+    </div>
+  </div>`;
+}
+
+// ─── SAVED / LIBRARY ─────────────────────────
+function setLibTab(tab) { V.libTab = tab; render(); }
+
+function renderSaved() {
+  const favSents = SENTENCES.filter(s=>DB.favorites.has(s.id));
+  const learnedSents = SENTENCES.filter(s=>DB.learned.has(s.id));
+  const tabs = `<div class="lib-tabs">
+    <button class="lib-tab${V.libTab==='saved'?' on':''}" onclick="setLibTab('saved')">⭐ Saved (${favSents.length})</button>
+    <button class="lib-tab${V.libTab==='learned'?' on':''}" onclick="setLibTab('learned')">📗 Learned (${learnedSents.length})</button>
+  </div>`;
+  if (V.libTab === 'learned') return renderLearnedTab(tabs, learnedSents);
+  if (!favSents.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">⭐</div>No saved sentences yet.<br><span style="font-size:13px">Tap ⭐ Save on any card.</span></div></div>`;
+  const favIds = JSON.stringify(favSents.map(s=>s.id)).replace(/"/g,"'");
+  return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}
+    <div class="learned-cta">
+      <div class="learned-cta-info">
+        <div class="learned-cta-title">⭐ ${favSents.length} saved sentence${favSents.length!==1?'s':''}</div>
+        <div class="learned-cta-sub">Practice your saved words</div>
+      </div>
+      <button class="learned-practice-btn" onclick="startPractice({ids:${favIds}})">🎯 Practice All</button>
+    </div>
+    ${favSents.map((s,i)=>renderSentenceCard(s,i,true)).join('')}</div>`;
+}
+
+function renderLearnedTab(tabs, learnedSents) {
+  if (!learnedSents.length) return `<div style="padding-top:14px"><h2 class="page-title">Library</h2>${tabs}<div class="empty-state" style="padding-top:40px"><div class="empty-icon">📗</div>No learned sentences yet.<br><span style="font-size:13px">Mark sentences ✓ Done to track your progress.</span></div></div>`;
+  const ids = JSON.stringify(learnedSents.map(s=>s.id)).replace(/"/g,"'");
+  return `<div style="padding-top:14px">
+    <h2 class="page-title">Library</h2>
+    ${tabs}
+    <div class="learned-cta">
+      <div class="learned-cta-info">
+        <div class="learned-cta-title">✅ ${learnedSents.length} sentence${learnedSents.length!==1?'s':''} learned</div>
+        <div class="learned-cta-sub">Practice to lock them into memory</div>
+      </div>
+      <button class="learned-practice-btn" onclick="startPractice({ids:${ids}})">🎯 Practice All</button>
+    </div>
+    
+    ${learnedSents.map((s,i)=>renderSentenceCard(s,i,true)).join('')}
+  </div>`;
+}
+
+// ─── STATS ───────────────────────────────────
+function renderStats() {
+  const tot = SENTENCES.length, done = DB.learned.size, fav = DB.favorites.size, und = DB.understood.size;
+  const pct = tot ? Math.round(done/tot*100) : 0;
+  const lvColors = { A1:'#16A34A', A2:'#D97706', B1:'#2563EB' };
+  const byLevel = ['A1','A2','B1'].map(lv => {
+    const lvS = SENTENCES.filter(s=>s.lv===lv); const lvD = lvS.filter(s=>DB.learned.has(s.id)).length;
+    return { lv, done:lvD, tot:lvS.length, pct:lvS.length?Math.round(lvD/lvS.length*100):0 };
+  });
+  const byTopic = TOPICS.map(t => {
+    const tS = SENTENCES.filter(s=>s.t===t.id); const tD = tS.filter(s=>DB.learned.has(s.id)).length;
+    return { ...t, done:tD, tot:tS.length, pct:tS.length?Math.round(tD/tS.length*100):0 };
+  }).sort((a,b)=>b.pct-a.pct);
+  const histRows = [];
+  for(let i=6;i>=0;i--) {
+    const d=new Date(Date.now()-i*86400000);
+    const key=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const cnt = DB.history[key]||0;
+    const label = i===0?'Today':i===1?'Yesterday':d.toLocaleDateString('en-DE',{weekday:'short'});
+    histRows.push({label,cnt});
+  }
+  const maxH = Math.max(...histRows.map(r=>r.cnt),1);
+  const reviewDue = getSrsReviewIds().length;
+  const srsTotal = Object.keys(DB.srs).length;
+  const srsLvl5plus = Object.values(DB.srs).filter(v=>v.level>=4).length;
+
+  return `<div style="padding-top:14px">
+    <h2 class="page-title">Statistics</h2>
+    <p class="page-sub">Your learning progress at a glance</p>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-lbl">Total Learned</div><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-sub">of ${tot} sentences</div></div>
+      <div class="stat-box"><div class="stat-lbl">Completion</div><div class="stat-num" style="color:var(--accent)">${pct}%</div><div class="stat-sub">overall</div></div>
+      <div class="stat-box"><div class="stat-lbl">Streak</div><div class="stat-num">🔥 ${DB.streak}</div><div class="stat-sub">days in a row</div></div>
+      <div class="stat-box"><div class="stat-lbl">Daily Goal</div><div class="stat-num" style="color:var(--blue)">${DB.dailyGoal}</div><div class="stat-sub">sentences/day <span style="cursor:pointer" onclick="openGoalModal()">✏️</span></div></div>
+    </div>
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-box"><div class="stat-lbl">Saved</div><div class="stat-num" style="color:var(--amber)">${fav}</div></div>
+      <div class="stat-box"><div class="stat-lbl">Patterns</div><div class="stat-num" style="color:var(--purple)">${und}</div></div>
+      <div class="stat-box"><div class="stat-lbl">Remaining</div><div class="stat-num" style="color:var(--text-3)">${tot-done}</div></div>
+    </div>
+    <div class="sec-lbl">🔁 Spaced Repetition</div>
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+      <div class="stat-box"><div class="stat-lbl">Due Today</div><div class="stat-num" style="color:var(--amber)">${reviewDue}</div><div class="stat-sub">for review</div></div>
+      <div class="stat-box"><div class="stat-lbl">In SRS</div><div class="stat-num" style="color:var(--blue)">${srsTotal}</div><div class="stat-sub">scheduled</div></div>
+      <div class="stat-box"><div class="stat-lbl">Mastered</div><div class="stat-num" style="color:var(--green)">${srsLvl5plus}</div><div class="stat-sub">level 5+</div></div>
+    </div>
+    <div class="sec-lbl">Last 7 Days</div>
+    ${histRows.map(r=>`<div class="hist-row"><span class="hist-day">${r.label}</span><div class="hist-bar-bg"><div class="hist-bar-fill" style="width:${Math.round(r.cnt/maxH*100)}%"></div></div><span class="hist-cnt">${r.cnt}</span></div>`).join('')}
+    <div class="sec-lbl">By Level</div>
+    ${byLevel.map(l=>`<div class="prog-row"><div class="prog-lbl" style="color:${lvColors[l.lv]}">${l.lv}</div><div class="prog-bar"><div class="prog-fill" style="width:${l.pct}%;background:${lvColors[l.lv]}"></div></div><div class="prog-pct" style="color:${lvColors[l.lv]}">${l.pct}%</div><div class="prog-cnt">${l.done}/${l.tot}</div></div>`).join('')}
+    <div class="sec-lbl">By Topic</div>
+    ${byTopic.map(t=>`<div class="prog-row clk" onclick="nav('browse','${t.id}')"><div style="font-size:15px;min-width:22px">${t.emoji}</div><div class="prog-bar"><div class="prog-fill" style="width:${t.pct}%;background:${t.color}"></div></div><div class="prog-pct" style="color:${t.color}">${t.pct}%</div><div class="prog-cnt">${t.done}/${t.tot}</div></div>`).join('')}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--white);border:1px solid var(--border);border-radius:10px;margin-bottom:10px">
+      <div style="font-size:13px;color:var(--text-2)">☁️ Auto Cloud Sync</div>
+      <div id="sync-status" style="font-size:12px;color:var(--text-3)">Connecting…</div>
+    </div>
+    <div class="sec-lbl">Data</div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <button onclick="exportData()" style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-strong)'" onmouseout="this.style.borderColor='var(--border)'">📤 Export</button>
+      <button onclick="importData()" style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-strong)'" onmouseout="this.style.borderColor='var(--border)'">📥 Import</button>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════════════
+function toggleReveal(id) {
+  const en=document.getElementById('en-'+id), hn=document.getElementById('hn-'+id), us=document.getElementById('us-'+id);
+  if (!en) return;
+  if (en.classList.contains('hid')) {
+    en.classList.remove('hid'); if(hn) hn.style.display='none'; if(us) us.style.display='block';
+    updateStreak();
+  } else {
+    en.classList.add('hid'); if(hn) hn.style.display='block'; if(us) us.style.display='none';
+  }
+}
+
+function toggleLearned(id) {
+  const was = DB.learned.has(id);
+  if (was) { DB.learned.delete(id); DB.dailyLearned.delete(id); }
+  else { DB.learned.add(id); DB.dailyLearned.add(id); updateStreak(); const k=todayKey(); DB.history[k]=(DB.history[k]||0)+1; }
+  save();
+  const card = document.getElementById('sc-'+id);
+  if (card) {
+    card.classList.toggle('lrn', DB.learned.has(id));
+    const btn = document.getElementById('lrn-btn-'+id);
+    if (btn) { btn.className=DB.learned.has(id)?'act-btn is-learned':'act-btn'; btn.innerHTML=ICO.check+(DB.learned.has(id)?' Learned':' Mark done'); }
+    const badge = card.querySelector('.lrn-badge');
+    if (DB.learned.has(id) && !badge) { const top=card.querySelector('.sc-top'); if(top){ const s=document.createElement('span'); s.className='lrn-badge'; s.textContent='✓ Learned'; top.appendChild(s); } }
+    else if (!DB.learned.has(id) && badge) badge.remove();
+  }
+  updateHeader();
+}
+
+function toggleFav(id) {
+  DB.favorites.has(id) ? DB.favorites.delete(id) : DB.favorites.add(id); save();
+  const card = document.getElementById('sc-'+id);
+  if (card) {
+    card.classList.toggle('fav', DB.favorites.has(id));
+    const btn = document.getElementById('fav-btn-'+id);
+    if (btn) { btn.className=DB.favorites.has(id)?'act-btn is-fav':'act-btn'; btn.innerHTML=ICO.star+(DB.favorites.has(id)?' Saved':' Save'); }
+  }
+}
+
+function toggleUnderstood(id) {
+  DB.understood.has(id) ? DB.understood.delete(id) : DB.understood.add(id); save();
+  const card = document.getElementById('pc-'+id);
+  if (card) {
+    card.classList.toggle('und', DB.understood.has(id));
+    const btn = card.querySelector('.act-btn');
+    if (btn) { btn.className=DB.understood.has(id)?'act-btn is-learned':'act-btn'; btn.innerHTML=ICO.check+(DB.understood.has(id)?' Understood ✓':' Mark understood'); }
+  }
+}
+
+function setFilter(f) { V.filter=f; render(); }
+function setQuery(q) { V.query=q; clearTimeout(window._qt); window._qt=setTimeout(render,300); }
+function setPatCat(c) { V.patCat=c; render(); }
+function refreshQueue() { DB.dailyQueueDate=null; DB.dailyLearned=new Set(); save(); nav('today'); }
+
+// ─── TTS ─────────────────────────────────────
+// Uses Web Speech API with the best available German neural/natural voice.
+// Voice priority: Google DE neural > Microsoft DE neural > any DE voice > fallback.
+let _ttsAudio = null;
+let _bestVoice = null;
+
+// Pick the best German voice once voices are loaded
+function pickBestGermanVoice() {
+  if (!window.speechSynthesis) return null;
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+
+  const deVoices = voices.filter(v => v.lang.startsWith('de'));
+  if (!deVoices.length) return null;
+
+  // Prefer neural/natural voices by name keywords (Google & Microsoft both label them)
+  const priority = [
+    v => /google/i.test(v.name) && /deutsch|german|de/i.test(v.name),
+    v => /microsoft.*katja|microsoft.*hedda|microsoft.*stefan/i.test(v.name),
+    v => /microsoft/i.test(v.name) && deVoices.includes(v),
+    v => /neural|natural|premium|enhanced/i.test(v.name) && deVoices.includes(v),
+    v => deVoices.includes(v),
+  ];
+
+  for (const test of priority) {
+    const match = deVoices.find(test);
+    if (match) return match;
+  }
+  return deVoices[0];
+}
+
+// Pre-load voices as soon as browser has them
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => { _bestVoice = pickBestGermanVoice(); };
+  // Also try immediately (some browsers populate synchronously)
+  _bestVoice = pickBestGermanVoice();
+}
+
+// TTS engine cascade — tries audio APIs first, then best Web Speech voice
+const TTS_ENGINES = [
+  (text) => `https://api.streamelements.com/kappa/v2/speech?voice=de-DE-Wavenet-C&text=${encodeURIComponent(text)}`,
+  (text) => `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=de&client=gtx`,
+];
+
+function speak(text, id) {
+  if (V.speaking === id) {
+    if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
+    else if (window.speechSynthesis) speechSynthesis.cancel();
+    V.speaking = null; updateSpeakBtns(); return;
+  }
+  if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  V.speaking = id; updateSpeakBtns();
+
+  let finished = false;
+  const done = () => {
+    if (finished) return;
+    finished = true;
+    V.speaking = null; updateSpeakBtns(); _ttsAudio = null;
+  };
+
+  function speakWithWebSpeech() {
+    if (!window.speechSynthesis) { done(); return; }
+    if (!_bestVoice) _bestVoice = pickBestGermanVoice();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE';
+    u.rate = 0.82;
+    u.pitch = 1;
+    u.volume = 1;
+    if (_bestVoice) u.voice = _bestVoice;
+    u.onend = done;
+    u.onerror = done;
+    speechSynthesis.speak(u);
+  }
+
+  function tryEngine(idx) {
+    if (idx >= TTS_ENGINES.length) {
+      speakWithWebSpeech();
+      return;
+    }
+    const audio = new Audio();
+    _ttsAudio = audio;
+    let errored = false;
+    audio.onended = done;
+    audio.onerror = () => {
+      if (errored) return;
+      errored = true;
+      _ttsAudio = null;
+      tryEngine(idx + 1);
+    };
+    audio.src = TTS_ENGINES[idx](text);
+    audio.playbackRate = 0.85;
+    audio.play().catch(() => {
+      if (errored) return;
+      errored = true;
+      _ttsAudio = null;
+      tryEngine(idx + 1);
+    });
+  }
+  tryEngine(0);
+}
+function updateSpeakBtns() {
+  document.querySelectorAll('.speak-btn').forEach(btn => {
+    const id = btn.dataset.id;
+    if (V.speaking===id) { btn.className='act-btn is-playing speak-btn'; btn.innerHTML=ICO.speak+'<span class="pulse"> Playing…</span>'; }
+    else { btn.className='act-btn speak-btn'; btn.innerHTML=ICO.speak+' Listen'; }
+  });
+}
+
+function openGoalModal() {
+  document.getElementById('goal-opts').innerHTML = [5,8,10,12,15,20,25,30].map(v=>`<div class="goal-opt${DB.dailyGoal===v?' sel':''}" onclick="setGoal(${v})">${v}</div>`).join('');
+  document.getElementById('goal-modal').style.display='flex';
+}
+function closeGoalModal(e) { if(!e||e.target===document.getElementById('goal-modal')) document.getElementById('goal-modal').style.display='none'; render(); }
+function setGoal(n) { DB.dailyGoal=n; DB.dailyQueueDate=null; save(); document.querySelectorAll('.goal-opt').forEach(el=>el.classList.toggle('sel',parseInt(el.textContent)===n)); }
+
+// ==============================
+// PRACTICE MODE
+// ==============================
+let P = { active:false, queue:[], idx:0, revealed:false, got:0, again:0, isSRS:false };
+
+function startPractice(opts) {
+  const ids = Array.isArray(opts) ? opts : opts.ids;
+  const isSRS = Array.isArray(opts) ? false : (opts.isSRS || false);
+  const sents = ids.map(id=>SENTENCES.find(s=>s.id===id)).filter(Boolean);
+  if (!sents.length) return;
+  P = { active:true, queue:shuffle([...sents]), idx:0, revealed:false, got:0, again:0, isSRS };
+  renderPractice();
+}
+
+function renderPractice() {
+  const existing = document.getElementById('practice-overlay');
+  if (existing) existing.remove();
+  if (!P.active) return;
+
+  const ov = document.createElement('div');
+  ov.id = 'practice-overlay';
+  ov.className = 'practice-overlay';
+
+  if (P.idx >= P.queue.length) {
+    const total = P.queue.length;
+    const pct = total ? Math.round(P.got/total*100) : 0;
+    const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '💪';
+    const title = pct >= 80 ? 'Excellent work!' : pct >= 50 ? 'Good progress!' : 'Keep practicing!';
+    const retryIds = JSON.stringify(P.queue.map(s=>s.id)).replace(/"/g,"'");
+    const srsMsg = P.isSRS ? `<div style="font-size:12px;color:var(--text-3);margin-bottom:16px">📅 SRS intervals updated - next reviews scheduled.</div>` : '';
+    ov.innerHTML = `
+      <div class="practice-hdr"><span style="font-size:16px;font-weight:700;color:var(--text)">Practice Complete</span></div>
+      <div class="practice-body">
+        <div class="prac-summary">
+          <div class="prac-sum-icon">${emoji}</div>
+          <div class="prac-sum-title">${title}</div>
+          <div class="prac-sum-sub">You reviewed ${total} sentence${total!==1?'s':''}</div>
+          ${srsMsg}
+          <div class="prac-sum-stats">
+            <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--green)">${P.got}</div><div class="prac-sum-l">Got it</div></div>
+            <div class="prac-sum-stat"><div class="prac-sum-n" style="color:var(--amber)">${P.again}</div><div class="prac-sum-l">Still learning</div></div>
+          </div>
+          <div class="prac-sum-actions">
+            <button class="prac-sum-retry" onclick="startPractice({ids:${retryIds},isSRS:${P.isSRS}})">Practice Again</button>
+            <button class="prac-sum-done" onclick="closePractice()">Done</button>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const s = P.queue[P.idx];
+    const topic = TOPICS.find(t=>t.id===s.t);
+    const total = P.queue.length;
+    const pct = Math.round(P.idx/total*100);
+    const gram = grammarTag(s.de);
+
+    const safeDE = s.de.replace(/'/g,"\\'");
+    const cardBody = `
+      <div class="practice-card">
+        ${topic ? `<div class="practice-topic-lbl">${topic.emoji} ${topic.name} - <span class="lvl-tag l${s.lv}" style="display:inline">${s.lv}</span>${gram?` - <span class="gram-tag" style="color:${gram.c};background:${gram.bg}">${gram.t}</span>`:''}</div>` : ''}
+        <div class="practice-de">${s.de}</div>
+        <div class="practice-ph">🔊 ${s.ph}</div>
+        ${P.revealed
+          ? `<div class="practice-en">${s.en}</div><div class="practice-use">💬 ${s.use}</div>`
+          : `<div class="practice-reveal-hint" onclick="practiceReveal()">Tap to reveal translation</div>`}
+      </div>
+      <div style="display:flex;justify-content:center;margin:10px 0">
+        <button class="act-btn speak-btn" data-id="prac-${s.id}" onclick="speak('${safeDE}','prac-${s.id}')" style="font-size:13px;padding:8px 18px">
+          ${ICO.speak} <span id="prac-speak-lbl">Listen</span>
+        </button>
+      </div>
+      ${P.revealed ? `
+        <div class="practice-btns">
+          <button class="prac-again-btn" onclick="practiceAnswer(false)">Still learning</button>
+          <button class="prac-got-btn" onclick="practiceAnswer(true)">Got it!</button>
+        </div>` : ''}
+      <div class="kbd-hint" style="margin-top:10px">
+        <span class="kbd">Space</span> show/hide &nbsp;
+        <span class="kbd">←</span> prev &nbsp;
+        <span class="kbd">→</span> next
+      </div>`;
+
+    ov.innerHTML = `
+      <div class="practice-hdr">
+        <button class="practice-exit" onclick="closePractice()">Exit</button>
+        <div class="practice-prog-wrap">
+          <div class="practice-prog-bar"><div class="practice-prog-fill" style="width:${pct}%"></div></div>
+          <div class="practice-prog-lbl">${P.idx+1}/${total} - Got ${P.got} - Learning ${P.again}</div>
+        </div>
+      </div>
+      <div class="practice-body">
+        ${cardBody}
+      </div>`;
+  }
+  document.body.appendChild(ov);
+
+  // Auto-play audio for new card (not when just revealing answer)
+  if (P.active && P.idx < P.queue.length && !P.revealed) {
+    const s = P.queue[P.idx];
+    setTimeout(() => speak(s.de, `prac-${s.id}`), 150);
+  }
+}
+
+function practiceReveal() { P.revealed = !P.revealed; renderPractice(); }
+
+function practiceAnswer(got) {
+  if (P.isSRS) srsSchedule(P.queue[P.idx].id, got);
+  if(got) P.got++; else P.again++;
+  P.idx++; P.revealed=false; renderPractice();
+}
+
+function practiceNext() {
+  if (P.idx < P.queue.length) { P.idx++; P.revealed=false; renderPractice(); }
+}
+
+function practicePrev() {
+  if (P.idx > 0) { P.idx--; P.revealed=false; renderPractice(); }
+}
+
+function closePractice() { P.active=false; const ov=document.getElementById('practice-overlay'); if(ov) ov.remove(); }
+
+// ─── KEYBOARD SHORTCUTS ───────────────────────
+document.addEventListener('keydown', e => {
+  if (!P.active) return;
+  if (e.key === 'Escape') { closePractice(); return; }
+  if (P.idx >= P.queue.length) return;
+  if (e.code === 'Space') { e.preventDefault(); practiceReveal(); return; }
+  if (e.code === 'ArrowRight') { e.preventDefault(); practiceNext(); return; }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); practicePrev(); return; }
+});
+
+function exportData() {
+  const data = { exportedAt: new Date().toISOString(), ...dbToObj() };
+  const json = JSON.stringify(data, null, 2);
+
+  const existing = document.getElementById('dd-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'dd-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:22px;width:100%;max-width:500px;max-height:85vh;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:16px;font-weight:700">📤 Export Progress</div>
+        <button onclick="document.getElementById('dd-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#A8A29E;line-height:1">×</button>
+      </div>
+      <div style="font-size:13px;color:#57534E">Download as a file <strong>or</strong> copy the JSON text to paste anywhere.</div>
+      <textarea id="export-ta" readonly style="flex:1;min-height:160px;font-family:monospace;font-size:11px;border:1px solid #E2DFD9;border-radius:8px;padding:10px;resize:none;color:#1C1917;background:#F4F2EE;outline:none">${json}</textarea>
+      <div style="display:flex;gap:8px">
+        <button onclick="
+          const json = document.getElementById('export-ta').value;
+          const blob = new Blob([json],{type:'application/json'});
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'deutschdaily-backup-${new Date().toISOString().slice(0,10)}.json';
+          a.click(); URL.revokeObjectURL(a.href);
+        " style="flex:1;background:#2563EB;color:white;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">💾 Download File</button>
+        <button id="copy-export-btn" onclick="
+          const btn = document.getElementById('copy-export-btn');
+          navigator.clipboard.writeText(document.getElementById('export-ta').value)
+            .then(()=>{ if(btn) btn.textContent='✅ Copied!'; setTimeout(()=>{ const b=document.getElementById('copy-export-btn'); if(b) b.textContent='📋 Copy Text'; },2000); })
+            .catch(()=>{ document.getElementById('export-ta').select(); document.execCommand('copy'); if(btn) btn.textContent='✅ Copied!'; setTimeout(()=>{ const b=document.getElementById('copy-export-btn'); if(b) b.textContent='📋 Copy Text'; },2000); });
+        " style="flex:1;background:#F4F2EE;border:1px solid #E2DFD9;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">📋 Copy Text</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+function importData() {
+  const existing = document.getElementById('dd-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'dd-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:22px;width:100%;max-width:500px;max-height:85vh;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:16px;font-weight:700">📥 Import Progress</div>
+        <button onclick="document.getElementById('dd-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#A8A29E;line-height:1">×</button>
+      </div>
+      <div style="font-size:13px;color:#57534E">Pick a backup file <strong>or</strong> paste JSON text directly below. Your current progress will be <strong>merged</strong> (not overwritten).</div>
+      <textarea id="import-ta" placeholder="Paste your backup JSON here..." style="flex:1;min-height:160px;font-family:monospace;font-size:11px;border:1px solid #E2DFD9;border-radius:8px;padding:10px;resize:none;color:#1C1917;background:#F4F2EE;outline:none"></textarea>
+      <div id="import-err" style="font-size:12px;color:#DC2626;display:none"></div>
+      <div style="display:flex;gap:8px">
+        <button onclick="document.getElementById('dd-file-input').click()" style="flex:1;background:#F4F2EE;border:1px solid #E2DFD9;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">📂 Choose File</button>
+        <button onclick="applyImport(document.getElementById('import-ta').value)" style="flex:1;background:#2563EB;color:white;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">✅ Import</button>
+      </div>
+      <input id="dd-file-input" type="file" accept=".json,application/json" style="display:none" onchange="
+        const file = this.files[0]; if(!file) return;
+        const r = new FileReader();
+        r.onload = ev => { document.getElementById('import-ta').value = ev.target.result; };
+        r.readAsText(file);
+      ">
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+function applyImport(text) {
+  const errEl = document.getElementById('import-err');
+  const show = msg => { if(errEl){ errEl.textContent = msg; errEl.style.display = 'block'; } };
+  if (!text.trim()) { show('❌ Nothing to import — paste or load a file first.'); return; }
+  let parsed;
+  try { parsed = JSON.parse(text); } catch(e) { show('❌ Invalid JSON. Make sure you copied the full text without changes.'); return; }
+  if (!Array.isArray(parsed.learned) && !parsed.streak && !parsed.srs) { show('❌ This doesn\'t look like a DeutschDaily backup file.'); return; }
+  const merged = {
+    learned:        [...new Set([...DB.learned,    ...(parsed.learned||[])])],
+    favorites:      [...new Set([...DB.favorites,  ...(parsed.favorites||[])])],
+    understood:     [...new Set([...DB.understood, ...(parsed.understood||[])])],
+    streak:         Math.max(DB.streak, parsed.streak||0),
+    lastStudy:      DB.lastStudy || parsed.lastStudy || null,
+    dailyGoal:      DB.dailyGoal,
+    dailyQueue:     DB.dailyQueue,
+    dailyQueueDate: DB.dailyQueueDate,
+    dailyLearned:   [...new Set([...DB.dailyLearned, ...(parsed.dailyLearned||[])])],
+    history:        Object.assign({}, parsed.history||{}, DB.history),
+    srs:            Object.assign({}, parsed.srs||{}, DB.srs),
+  };
+  objToDB(merged);
+  save();
+  render();
+  document.getElementById('dd-modal').remove();
+  // Show success toast
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#16A34A;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:400;box-shadow:0 4px 12px rgba(0,0,0,0.15)';
+  toast.textContent = `✅ Imported! ${merged.learned.length} learned · ${merged.favorites.length} saved`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+
+
+
+function updateSyncUI() {
+  // no-op — sync is fully automatic, status shown via setSyncStatus
+}
+
+load().then(() => { render(); });
+</script>
+</body>
+</html>
