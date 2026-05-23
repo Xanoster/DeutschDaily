@@ -178,6 +178,10 @@ assert.strictEqual(t.DB().patternSrs.would_possible.interval, 3, 'first understo
 reset({ settings: { externalTts: false } });
 assert.strictEqual(t.DB().settings.externalTts, true, 'external TTS stays enabled after normalizing old settings');
 
+reset({ settings: { focusTopics: ['appointments'], curriculumMode: 'survival' } });
+assert.strictEqual(Object.prototype.hasOwnProperty.call(t.DB().settings, 'focusTopics'), false, 'old daily focus topic settings are discarded');
+assert.strictEqual(Object.prototype.hasOwnProperty.call(t.DB().settings, 'curriculumMode'), false, 'old curriculum mode setting is discarded');
+
 reset({
   attempts: [{ id: 'un1', date: t.today(), mode: 'practice', direction: 'type', result: 'got' }],
 });

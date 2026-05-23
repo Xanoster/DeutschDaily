@@ -21,6 +21,7 @@ for (const script of expectedScripts) {
 if (!/href="src\/styles\.css(?:\?[^"]*)?"/.test(html)) errors.push('DEDaily.html missing src/styles.css');
 if (!/rel="icon" href="src\/assets\/logo\.svg" type="image\/svg\+xml"/.test(html)) errors.push('DEDaily.html missing SVG favicon');
 if (!fs.existsSync(path.join(root, 'src/assets/logo.svg'))) errors.push('src/assets/logo.svg missing');
+if (!fs.existsSync(path.join(root, 'api/tts.js'))) errors.push('api/tts.js missing');
 
 try {
   const vercelConfig = JSON.parse(read('vercel.json'));

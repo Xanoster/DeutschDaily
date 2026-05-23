@@ -8,8 +8,6 @@ const SKEY_RECOVERY = 'dd_v4_recovery';
 const DB_VERSION = 5;
 const FIRST_REVIEW_DAYS = 3;
 const DEFAULT_SETTINGS = {
-  focusTopics: [],
-  curriculumMode: 'survival',
   externalTts: true,
 };
 
@@ -173,11 +171,7 @@ function normalizePatternAttempts(value, validIds) {
   }).filter(Boolean);
 }
 function normalizeSettings(value) {
-  const raw = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
-  const topicIds = new Set(TOPICS.map(t => t.id));
   return {
-    focusTopics: Array.isArray(raw.focusTopics) ? raw.focusTopics.map(String).filter(id => topicIds.has(id)) : [],
-    curriculumMode: raw.curriculumMode === 'all' ? 'all' : 'survival',
     externalTts: true,
   };
 }
@@ -524,32 +518,8 @@ function recordPatternAttempt({ id, result, intervalBefore = 0, intervalAfter = 
 
 let _sessionGotIt = new Set();
 
-const SURVIVAL_TOPIC_ORDER = ['understand', 'emergency', 'health', 'appointments', 'transport', 'services', 'housing', 'phone', 'admin', 'money', 'work', 'social'];
-const LEVEL_ORDER = { A1: 0, A2: 1, B1: 2 };
-function curriculumRank(sentence) {
-  const topicRank = SURVIVAL_TOPIC_ORDER.indexOf(sentence.t);
-  return [
-    LEVEL_ORDER[sentence.lv] ?? 9,
-    topicRank === -1 ? 99 : topicRank,
-    sentence.id,
-  ];
-}
-function sortCurriculum(a, b) {
-  const ra = curriculumRank(a), rb = curriculumRank(b);
-  for (let i = 0; i < ra.length; i++) {
-    if (ra[i] < rb[i]) return -1;
-    if (ra[i] > rb[i]) return 1;
-  }
-  return 0;
-}
 function getNewSentencePool() {
-  const focus = DB.settings.focusTopics || [];
-  let pool = SENTENCES.filter(s => !DB.learned.has(s.id) && !isSrsScheduledFuture(s.id));
-  if (focus.length) {
-    const focused = pool.filter(s => focus.includes(s.t));
-    if (focused.length) pool = focused;
-  }
-  if (DB.settings.curriculumMode === 'survival') return pool.sort(sortCurriculum);
+  const pool = SENTENCES.filter(s => !DB.learned.has(s.id) && !isSrsScheduledFuture(s.id));
   return shuffle(pool);
 }
 function ensureDailyQueue() {

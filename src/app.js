@@ -92,14 +92,6 @@ function renderToday() {
   const learnedToday = (DB.historyWords[today()] || []).filter(id => DB.learned.has(id)).length;
   const reviewedToday = DB.attempts.filter(a => a.date === today() && a.wasDue && (a.result === 'got' || a.result === 'again')).length;
   const tot = qs.length, pct = tot ? Math.min(100, Math.round(queueDone / tot * 100)) : 0, done = queueDone >= tot && tot > 0;
-  const focusTopics = DB.settings.focusTopics || [];
-  const focusControls = `<div class="focus-card">
-	  <div class="focus-card-title">Daily focus</div>
-	  <div class="focus-row">
-	    <button class="filter-chip${focusTopics.length === 0 ? ' on' : ''}" onclick="setFocusTopic('all')" aria-pressed="${focusTopics.length === 0}" type="button">Survival mix</button>
-	    ${TOPICS.map(topic => `<button class="filter-chip${focusTopics.includes(topic.id) ? ' on' : ''}" onclick="setFocusTopic(${jsArg(topic.id)})" aria-pressed="${focusTopics.includes(topic.id)}" type="button">${topic.emoji} ${esc(topic.name)}</button>`).join('')}
-	  </div>
-	</div>`;
   const storageWarning = DB.storageError ? `<div class="tip-card storage-warning"><div class="tip-lbl">Storage warning</div><div class="tip-text">${esc(DB.storageError)}</div></div>` : '';
 
   const gc = `<div class="goal-card">
@@ -117,7 +109,7 @@ function renderToday() {
 ${done ? `<div class="goal-complete">🎉 Daily goal complete. Review due cards, browse topics, or raise the goal if you want more practice.</div>` : `<div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%"></div></div>`}
   </div>`;
 
-  return `${storageWarning}${gc}${focusControls}
+  return `${storageWarning}${gc}
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
   <div style="font-size:14px;font-weight:600;color:var(--text)">Today's ${tot} Sentences</div>
@@ -725,20 +717,6 @@ function toggleUnderstood(id) {
 function setFilter(f) { V.filter = f; render(); }
 function setQuery(q) { V.query = q; clearTimeout(window._qt); window._qt = setTimeout(render, 300); }
 function refreshQueue() { DB.dailyQueueDate = null; save(); nav('today'); }
-function setFocusTopic(topicId) {
-  const nextTopicId = String(topicId || '');
-  if (nextTopicId !== 'all' && !TOPICS.some(topic => topic.id === nextTopicId)) return;
-  if (nextTopicId === 'all') {
-    DB.settings.focusTopics = [];
-  } else {
-    const current = new Set(DB.settings.focusTopics || []);
-    current.has(nextTopicId) ? current.delete(nextTopicId) : current.add(nextTopicId);
-    DB.settings.focusTopics = [...current];
-  }
-  DB.dailyQueueDate = null;
-  save();
-  render();
-}
 
 // ─── TTS ─────────────────────────────────────
 // ── TTS Engine ──────────────────────────────────────────────────────────────
@@ -753,6 +731,7 @@ const isBrave = !!(navigator.brave);
 let _ttsAudio = null;
 let _bestVoice = null;
 let _voicesLoaded = false;
+let _ttsRunId = 0;
 
 // Pick the best available German voice
 function pickBestGermanVoice() {
@@ -781,84 +760,134 @@ function pickBestGermanVoice() {
 
 // Pre-load voices; also retry on voiceschanged (Chrome fires it async)
 function _initVoices() {
+  const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
   _bestVoice = pickBestGermanVoice();
-  _voicesLoaded = true;
+  _voicesLoaded = voices.length > 0;
 }
 if (window.speechSynthesis) {
   speechSynthesis.onvoiceschanged = _initVoices;
   _initVoices(); // synchronous browsers (Firefox, some mobile)
 }
 
-// External TTS API cascade (desktop only)
-const TTS_ENGINES = [
+// External TTS API cascade. Local file mode keeps the direct browser behavior,
+// while deployed HTTPS pages use the same-origin Vercel proxy first.
+const TTS_AUDIO_START_TIMEOUT_MS = 3500;
+const WEB_SPEECH_VOICE_WAIT_MS = 450;
+const TTS_LOCAL_ENGINES = [
   (text) => `https://api.streamelements.com/kappa/v2/speech?voice=de-DE-Wavenet-C&text=${encodeURIComponent(text)}`,
   (text) => `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=de&client=gtx`,
 ];
+const TTS_HOSTED_ENGINES = [
+  (text) => `/api/tts?text=${encodeURIComponent(text)}`,
+];
+
+function isLocalFilePage() {
+  return !window.location || window.location.protocol === 'file:';
+}
+
+function ttsEnginesForCurrentPage() {
+  return isLocalFilePage() ? TTS_LOCAL_ENGINES : TTS_HOSTED_ENGINES;
+}
+
+function waitForGermanVoice(callback) {
+  if (!window.speechSynthesis) { callback(); return; }
+  _bestVoice = pickBestGermanVoice();
+  if (_bestVoice || _voicesLoaded) { callback(); return; }
+
+  let settled = false;
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
+    if (speechSynthesis.removeEventListener) speechSynthesis.removeEventListener('voiceschanged', finish);
+    _bestVoice = pickBestGermanVoice();
+    _voicesLoaded = true;
+    callback();
+  };
+  const timer = setTimeout(finish, WEB_SPEECH_VOICE_WAIT_MS);
+  if (speechSynthesis.addEventListener) {
+    speechSynthesis.addEventListener('voiceschanged', finish, { once: true });
+  } else {
+    const previous = speechSynthesis.onvoiceschanged;
+    speechSynthesis.onvoiceschanged = () => {
+      if (typeof previous === 'function') previous();
+      finish();
+    };
+  }
+}
 
 function speak(text, id) {
   // Toggle off if same sentence is already playing
   if (V.speaking === id) {
+    _ttsRunId++;
     if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
     else if (window.speechSynthesis) speechSynthesis.cancel();
     V.speaking = null; updateSpeakBtns(); return;
   }
 
   // Cancel whatever is playing
+  const runId = ++_ttsRunId;
   if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
   if (window.speechSynthesis) speechSynthesis.cancel();
   V.speaking = id; updateSpeakBtns();
 
   let finished = false;
   const done = () => {
-    if (finished) return;
+    if (finished || runId !== _ttsRunId) return;
     finished = true;
     V.speaking = null; updateSpeakBtns(); _ttsAudio = null;
   };
 
   function speakWithWebSpeech() {
     if (!window.speechSynthesis) { done(); return; }
-    // Re-pick voice each time in case voices loaded after page init
-    if (!_bestVoice) _bestVoice = pickBestGermanVoice();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'de-DE';
-    u.rate = 0.82;
-    u.pitch = 1;
-    u.volume = 1;
-    if (_bestVoice) u.voice = _bestVoice;
-    u.onend = done;
-    u.onerror = done;
-    speechSynthesis.speak(u);
+    waitForGermanVoice(() => {
+      if (runId !== _ttsRunId) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'de-DE';
+      u.rate = 0.82;
+      u.pitch = 1;
+      u.volume = 1;
+      if (_bestVoice) u.voice = _bestVoice;
+      u.onend = done;
+      u.onerror = done;
+      speechSynthesis.speak(u);
+    });
   }
 
-  if (isMobile) {
+  if (isLocalFilePage() && isMobile) {
     speakWithWebSpeech();
     return;
   }
 
   // ── Desktop: try external APIs, fall back to Web Speech ─────────────────
   function tryEngine(idx) {
-    if (idx >= TTS_ENGINES.length) {
+    const engines = ttsEnginesForCurrentPage();
+    if (idx >= engines.length) {
       speakWithWebSpeech();
       return;
     }
     const audio = new Audio();
     _ttsAudio = audio;
     let errored = false;
-    audio.onended = done;
-    audio.onerror = () => {
-      if (errored) return;
+    let startTimer = null;
+    const clearStartTimer = () => {
+      if (startTimer) clearTimeout(startTimer);
+      startTimer = null;
+    };
+    const fail = () => {
+      if (errored || finished || runId !== _ttsRunId) return;
       errored = true;
+      clearStartTimer();
       _ttsAudio = null;
       tryEngine(idx + 1);
     };
-    audio.src = TTS_ENGINES[idx](text);
+    audio.onplaying = clearStartTimer;
+    audio.onended = () => { clearStartTimer(); done(); };
+    audio.onerror = fail;
+    audio.src = engines[idx](text);
     audio.playbackRate = 0.85;
-    audio.play().catch(() => {
-      if (errored) return;
-      errored = true;
-      _ttsAudio = null;
-      tryEngine(idx + 1);
-    });
+    startTimer = setTimeout(fail, TTS_AUDIO_START_TIMEOUT_MS);
+    audio.play().then(clearStartTimer).catch(fail);
   }
   tryEngine(0);
 }
