@@ -5,8 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#4F46E5">
   <title>DeutschDaily</title>
-  <link rel="stylesheet" href="src/styles.css">
+  <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="src/styles.css?v=history-20260523">
 </head>
 
 <body>
@@ -14,7 +16,7 @@
   <div class="dashboard-layout">
     <aside class="sidebar">
       <div class="sidebar-logo-wrap">
-        <div class="sidebar-logo" onclick="nav('today')">Deutsch<em>Daily</em></div>
+        <button class="sidebar-logo" onclick="nav('today')" type="button">Deutsch<em>Daily</em></button>
         <div class="sidebar-tagline">Your daily German practice</div>
       </div>
       <div class="sidebar-divider"></div>
@@ -29,7 +31,7 @@
       <div class="sidebar-footer">
         <div class="sidebar-footer-stat">
           <div class="sfs-icon">🎯</div>
-          <div><div class="sfs-val" id="sb-learned-count">0</div><div style="font-size:11px;color:var(--text-3)">words learned</div></div>
+          <div><div class="sfs-val" id="sb-learned-count">0</div><div style="font-size:11px;color:var(--text-3)">sentences learned</div></div>
         </div>
       </div>
     </aside>
@@ -41,9 +43,9 @@
             <div class="pbar-bg">
               <div class="pbar-fill" id="hpf" style="width:0%"></div>
             </div>
-            <div class="pbar-lbl" id="hpl">0 / 0 learned</div>
+            <div class="pbar-lbl" id="hpl">0 / 0 sentences learned</div>
           </div>
-          <div class="streak-pill" id="stk" onclick="nav('stats')">🔥 <span id="stk-n">0</span></div>
+          <button class="streak-pill" id="stk" onclick="nav('stats')" type="button">🔥 <span id="stk-n">0</span></button>
         </div>
       </div>
 
@@ -60,19 +62,19 @@
     </nav>
   </div>
 
-  <div class="modal-overlay" id="goal-modal" style="display:none" onclick="closeGoalModal(event)">
+  <div class="modal-overlay" id="goal-modal" style="display:none" onclick="closeGoalModal(event)" role="dialog" aria-modal="true" aria-labelledby="goal-modal-title">
     <div class="modal-box">
-      <div class="modal-title">Set Daily Goal</div>
+      <div class="modal-title" id="goal-modal-title">Set Daily Goal</div>
       <div class="modal-sub">How many new sentences to learn each day?</div>
       <div class="goal-opts-grid" id="goal-opts"></div>
       <button class="modal-done" onclick="closeGoalModal()">Done</button>
     </div>
   </div>
 
-  <script src="src/content.js"></script>
-  <script src="src/learning.js"></script>
-  <script src="src/storage.js"></script>
-  <script src="src/app.js"></script>
+  <script src="src/content.js?v=history-20260523"></script>
+  <script src="src/learning.js?v=history-20260523"></script>
+  <script src="src/storage.js?v=history-20260523"></script>
+  <script src="src/app.js?v=history-20260523"></script>
 </body>
 
 </html>

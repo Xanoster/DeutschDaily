@@ -83,6 +83,12 @@
 }
 
 .sentence-de {
+  display: block;
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  font-family: inherit;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.3px;
@@ -108,6 +114,12 @@
 }
 
 .sentence-en {
+  display: block;
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  font-family: inherit;
   font-size: 15px;
   font-weight: 600;
   color: var(--accent);
@@ -295,6 +307,9 @@
 }
 
 .pat-ex-speak {
+  background: none;
+  border: 0;
+  padding: 0;
   cursor: pointer;
   font-size: 13px;
   opacity: 0.5;
@@ -310,6 +325,38 @@
 .pat-en {
   font-size: 12px;
   color: var(--text-3);
+  margin-top: 2px;
+  padding-left: 25px;
+}
+
+.pat-informal {
+  margin-top: 9px;
+  padding: 10px 12px;
+  background: var(--purple-bg);
+  border: 1px solid var(--purple-border);
+  border-radius: 10px;
+}
+
+.pat-informal-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.pat-informal-de {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pat-informal-en {
+  font-size: 12px;
+  color: var(--text-2);
   margin-top: 2px;
   padding-left: 25px;
 }
@@ -525,6 +572,10 @@
 }
 
 .topic-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -660,6 +711,7 @@
 }
 
 .filter-chip {
+  font-family: 'Inter', sans-serif;
   flex-shrink: 0;
   padding: 7px 14px;
   border-radius: 99px;
@@ -672,6 +724,12 @@
   font-family: 'Inter', sans-serif;
   transition: all 0.15s;
   white-space: nowrap;
+}
+
+.srs-next {
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 600;
 }
 
 .filter-chip.on {

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DeutschDaily logo">
+  <rect width="64" height="64" rx="14" fill="#4F46E5"/>
+  <path d="M15 46V18h15c8 0 14 5 14 14s-6 14-14 14H15Zm9-8h6c3 0 5-2 5-6s-2-6-5-6h-6v12Z" fill="#FFFFFF"/>
+  <path d="M39 46V18h8v20h8v8H39Z" fill="#DFF6FF"/>
+  <circle cx="48" cy="17" r="5" fill="#22C55E"/>
+</svg>

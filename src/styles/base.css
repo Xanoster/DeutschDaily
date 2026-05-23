@@ -71,6 +71,13 @@ textarea {
   color-scheme: light;
 }
 
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.28);
+  outline-offset: 2px;
+}
+
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
@@ -106,6 +113,9 @@ textarea {
 }
 
 .sidebar-logo {
+  background: none;
+  border: 0;
+  padding: 0;
   font-weight: 800;
   font-size: 20px;
   cursor: pointer;
@@ -113,6 +123,7 @@ textarea {
   letter-spacing: -0.6px;
   user-select: none;
   display: inline-block;
+  font-family: 'Inter', sans-serif;
 }
 
 .sidebar-logo em {
@@ -183,6 +194,17 @@ textarea {
   min-width: 0;
   background: var(--bg);
   margin-left: 240px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .app-content {

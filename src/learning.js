@@ -160,6 +160,9 @@ function swapsFor(seed, pattern) {
 
 function practiceFor(seed, pattern) {
   if (seed.practice) return seed.practice;
+  if (seed.mode === 'recognition') {
+    return `Recognize this phrase when you hear or read it, then answer with: ${seed.expectedReply || 'the key detail they asked for'}.`;
+  }
   const swaps = swapsFor(seed, pattern);
   if (swaps.length && pattern) {
     return `Replace "${swaps[0][1]}" with one real detail from your life and say the full sentence aloud.`;
@@ -169,10 +172,14 @@ function practiceFor(seed, pattern) {
 
 function buildLearn(seed) {
   const pattern = (seed.patternIds || []).map(id => PATTERN_BY_ID[id]).find(Boolean);
-  const scenario = seed.scenario || SCENARIO_BY_TOPIC[seed.t] || null;
+  const baseScenario = SCENARIO_BY_TOPIC[seed.t] || null;
+  const scenario = seed.scenario || (seed.mode === 'recognition' && baseScenario
+    ? { ...baseScenario, speaker: baseScenario.listener, listener: 'you' }
+    : baseScenario);
   const variants = defaultVariantsFor(seed);
   const grammar = seed.learnGrammar || (pattern ? pattern.grammar : fixedGrammarFor(seed));
   return {
+    mode: seed.mode || 'production',
     scenario,
     meaning: seed.learnMeaning || seed.use,
     grammar: {

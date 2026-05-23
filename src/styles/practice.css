@@ -559,6 +559,8 @@
 }
 
 .practice-reveal-hint {
+  display: block;
+  width: 100%;
   font-size: 14px;
   color: var(--text-3);
   text-align: center;
@@ -569,11 +571,60 @@
   border: 1px dashed var(--border);
   user-select: none;
   transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
 }
 
 .practice-reveal-hint:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.practice-skip-reveal {
+  margin-top: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+}
+
+.typed-answer {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--white);
+}
+
+.typed-answer:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.typed-feedback {
+  font-size: 13px;
+  line-height: 1.45;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.typed-feedback.ok {
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+}
+
+.typed-feedback.warn {
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
 }
 
 .practice-en {

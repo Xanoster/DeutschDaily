@@ -26,6 +26,38 @@
     gap: 10px;
   }
 
+  .stats-grid-three {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .forecast-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stats-chart-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stats-chart-title span {
+    text-align: left;
+  }
+
+  .insight-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .backup-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .backup-actions {
+    min-width: 0;
+  }
+
   .learn-grid {
     grid-template-columns: 1fr;
   }
