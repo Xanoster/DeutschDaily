@@ -13,8 +13,8 @@ const SCENARIO_BY_TOPIC = {
   },
   admin: {
     speaker: 'You',
-    listener: 'authority, bank, insurance, employer, or official office',
-    place: 'form, letter, counter, email, or phone call',
+    listener: 'Bürgerbüro/Bürgeramt, Ausländerbehörde, Jobcenter, Finanzamt, bank, insurance, employer, or official office',
+    place: 'form, official letter, counter, email, portal, or phone call',
     purpose: 'understand requirements, documents, deadlines, and next steps'
   },
   housing: {
@@ -75,17 +75,32 @@ const SCENARIO_BY_TOPIC = {
 
 const EXPECTED_REPLY_BY_TOPIC = {
   understand: 'You may hear a slower repeat, a written word, a spelling, or a simpler explanation.',
-  appointments: 'You may hear a date, time, waiting-list option, confirmation method, or “leider kein Termin frei”.',
-  admin: 'You may hear a document list, deadline, reference number, portal instruction, or “Das müssen Sie nachreichen”.',
+  appointments: 'You may hear a date, time, waiting-list option, confirmation method, or "Leider kein Termin frei" ("Unfortunately, no appointment is available").',
+  admin: 'You may hear a document list, deadline, reference number, portal instruction, Aktenzeichen, Vorgangsnummer, or "Das müssen Sie nachreichen" ("You need to submit that later").',
   housing: 'You may hear a repair date, Hausmeister contact, request for photos, or a note about the Hausordnung.',
-  health: 'You may hear questions like Seit wann?, Welche Beschwerden?, Haben Sie Fieber?, or Haben Sie Ihre Karte dabei?',
+  health: 'You may hear questions like Seit wann? ("Since when?"), gesetzlich oder privat versichert? ("public or private insurance?"), Haben Sie Ihre Karte dabei? ("Do you have your card with you?"), or a note about eAU/Überweisung.',
   phone: 'You may hear a request for Kundennummer, email, birth date, reset code, or a promise to call back.',
   work: 'You may hear a deadline, priority decision, “passt”, “kein Problem”, or a request for a short update.',
   transport: 'You may hear a platform, line number, replacement bus, delay, ticket rule, or alternative connection.',
   services: 'You may hear a request for ID, receipt, order number, return label, payment method, or pickup code.',
-  money: 'You may hear an IBAN, due date, card-blocking confirmation, fee, or direct-debit instruction.',
-  social: 'You may hear “gerne”, “leider nicht”, a suggested time, or a casual follow-up question.',
-  emergency: 'You may hear short questions: Wo sind Sie?, Was ist passiert?, Ist jemand verletzt?, Bleiben Sie am Telefon.'
+  money: 'You may hear an IBAN, due date, Versicherungsnummer, Schadennummer, fee, direct-debit instruction, or card-blocking confirmation.',
+  social: 'You may hear "Gerne" ("Sure"), "Leider nicht" ("Unfortunately not"), a suggested time, or a casual follow-up question.',
+  emergency: 'You may hear short questions: Wo sind Sie? ("Where are you?"), Was ist passiert? ("What happened?"), Ist jemand verletzt? ("Is anyone injured?"), Bleiben Sie am Telefon ("Stay on the line").'
+};
+
+const LEARNER_REPLY_BY_TOPIC = {
+  understand: 'Answer with the exact problem: Das Wort habe ich nicht verstanden. or Können Sie das bitte wiederholen?',
+  appointments: 'Confirm or ask the next step: Ja, das passt. Können Sie mir den Termin schriftlich bestätigen?',
+  admin: 'Give the document/reference number if you have it, then ask: Was muss ich als Nächstes machen?',
+  housing: 'Give the address, problem, and since when it started, then ask for a concrete repair or callback.',
+  health: 'Answer with duration, insurance, and urgency: Seit gestern. Ich bin gesetzlich versichert. Es ist dringend.',
+  phone: 'Give your Kundennummer or email slowly, then ask for a callback or written confirmation.',
+  work: 'Confirm the priority or deadline: Alles klar, ich mache zuerst ... and ask if anything is missing.',
+  transport: 'Repeat the key detail: Also Gleis 5? Muss ich umsteigen? and ask again if unclear.',
+  services: 'Show the code, receipt, or order number, then ask what the next step is.',
+  money: 'Repeat the amount/reference, ask for confirmation in writing, and do not share PINs or passwords.',
+  social: 'Answer simply: Ja, gerne. / Leider passt es nicht. / Ich melde mich später.',
+  emergency: 'Give location first, then the urgent problem: Ich bin in ..., es brennt / jemand ist verletzt.'
 };
 
 const PRACTICE_BY_TOPIC = {
@@ -105,7 +120,7 @@ const PRACTICE_BY_TOPIC = {
 
 function informalize(text) {
   return text
-    .replace(/Könnten Sie/g, 'Kannst du')
+    .replace(/Könnten Sie/g, 'Könntest du')
     .replace(/Können Sie/g, 'Kannst du')
     .replace(/Haben Sie/g, 'Hast du')
     .replace(/Sagen Sie/g, 'Sag')
@@ -135,37 +150,19 @@ function fixedGrammarFor(seed) {
   if (/^Mir ist\b/.test(seed.de)) return 'Mir is dative and is used for body-state feelings: Mir ist schwindelig, kalt, schlecht.';
   if (/^Wo\b|^Wann\b|^Wie\b|^Wer\b|^Was\b/.test(seed.de)) return 'This is a W-question. The question word comes first and the verb comes in position two.';
   if (/^Kann ich\b|^Muss ich\b|^Darf ich\b|^Soll ich\b/.test(seed.de)) return 'This is a yes/no modal question. The modal verb comes first; the action verb usually goes to the end.';
-  if (/\bhabe\b.*\bge[a-zäöüß]+(t|en)\b/i.test(seed.de)) return 'This is Perfekt for a completed action: habe + past participle. It is common in spoken German.';
+  if (/\bhabe\b.*\b(ge[a-zäöüß]+(t|en)|bekommen|verloren|vergessen|geschickt|bezahlt|eingereicht|gekauft|entdeckt|hochgeladen|ausgesperrt)\b/i.test(seed.de)) return 'This is Perfekt for a completed action: habe + past participle. Common participles include bekommen, verloren, geschickt, and bezahlt.';
   if (/\bist\b|\bsind\b|\bbin\b/.test(seed.de)) return 'This sentence uses sein for state, identity, condition, or location. Keep the verb in position two.';
-  return 'Learn this as a fixed daily-life sentence first, then reuse the replaceable words shown below.';
-}
-
-function chunksFor(seed, pattern) {
-  if (Array.isArray(seed.chunks)) return seed.chunks;
-  if (pattern) return [[pattern.template, pattern.meaning], [seed.de, seed.en]];
-  return [[seed.de, seed.en], [seed.use, 'situation and purpose']];
-}
-
-function swapsFor(seed, pattern) {
-  if (Array.isArray(seed.swaps)) return seed.swaps;
-  if (pattern && Array.isArray(pattern.slots)) {
-    return pattern.slots.flatMap(slot => slot.examples.map(ex => [slot.name, ex]));
-  }
-  const topic = SCENARIO_BY_TOPIC[seed.t];
-  return [
-    ['situation', topic ? topic.place : 'the real situation'],
-    ['detail', 'time, place, document, person, amount, or problem']
-  ];
+  return 'Learn this as a fixed daily-life sentence first, then reuse it in similar situations.';
 }
 
 function practiceFor(seed, pattern) {
   if (seed.practice) return seed.practice;
   if (seed.mode === 'recognition') {
-    return `Recognize this phrase when you hear or read it, then answer with: ${seed.expectedReply || 'the key detail they asked for'}.`;
+    return `Recognize this phrase when you hear or read it, then answer with: ${seed.learnerReply || seed.expectedReply || 'the key detail they asked for'}.`;
   }
-  const swaps = swapsFor(seed, pattern);
-  if (swaps.length && pattern) {
-    return `Replace "${swaps[0][1]}" with one real detail from your life and say the full sentence aloud.`;
+  if (pattern && pattern.practice) return pattern.practice;
+  if (pattern) {
+    return 'Change one useful word or detail from the sentence itself and say it again. Keep the same grammar pattern.';
   }
   return PRACTICE_BY_TOPIC[seed.t] || 'Say the sentence aloud, then change one detail and say it again.';
 }
@@ -181,19 +178,16 @@ function buildLearn(seed) {
   return {
     mode: seed.mode || 'production',
     scenario,
-    meaning: seed.learnMeaning || seed.use,
+    meaning: seed.learnMeaning || seed.en,
+    use: seed.use,
     grammar: {
       title: seed.learnTitle || (pattern ? pattern.template : 'Fixed daily-life phrase'),
       simple: grammar,
-      chunks: chunksFor(seed, pattern),
       watchOut: seed.watchOut || (pattern ? pattern.watchOut : 'Use this in the situation shown; fixed phrases are useful, but do not overgeneralize them.')
     },
     variants,
-    reuse: {
-      slots: seed.slots || (pattern && pattern.slots ? pattern.slots.map(slot => slot.name) : ['detail']),
-      swaps: swapsFor(seed, pattern)
-    },
-    expectedReply: seed.expectedReply || EXPECTED_REPLY_BY_TOPIC[seed.t] || 'Listen for the key detail: time, place, document, price, or next step.',
+    expectedReply: seed.expectedReply || (pattern && pattern.expectedReply) || EXPECTED_REPLY_BY_TOPIC[seed.t] || 'Listen for the key detail: time, place, document, price, or next step.',
+    learnerReply: seed.learnerReply || (pattern && pattern.learnerReply) || LEARNER_REPLY_BY_TOPIC[seed.t] || 'Answer with the key detail, then ask for the next step.',
     practice: practiceFor(seed, pattern)
   };
 }

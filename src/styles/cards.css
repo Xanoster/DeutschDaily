@@ -485,40 +485,8 @@
   margin-bottom: 4px;
 }
 
-.learn-chunk {
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  padding: 3px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-.learn-chunk:last-child {
-  border-bottom: none;
-}
-
-.learn-chunk strong {
-  color: var(--text);
-  font-weight: 700;
-}
-
 .learn-muted {
   color: var(--text-2);
-}
-
-.variant-pill {
-  display: block;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.74);
-  border: 1px solid rgba(0,0,0,0.06);
-  margin-top: 5px;
-}
-
-.variant-pill strong {
-  color: var(--accent);
-  font-size: 11px;
-  margin-right: 5px;
 }
 
 .variant-preview {

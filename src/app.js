@@ -198,27 +198,32 @@ function esc(v) {
     .replace(/'/g, '&#39;');
 }
 
+function stripLeadingLabel(value, label) {
+  const text = String(value ?? '').trim();
+  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`^${escapedLabel}:?\\s*`, 'i'), '').trim();
+}
+
 function renderSentenceLearnPanel(s, compact = false, idPrefix = 'gm-') {
   const learn = s.learn;
   if (!learn) return '';
-  const pattern = findMatchingPattern(s);
-  const variants = learn.variants || [];
-  const swaps = (learn.reuse && learn.reuse.swaps ? learn.reuse.swaps : []).slice(0, 4);
-  const chunks = (learn.grammar && learn.grammar.chunks ? learn.grammar.chunks : []).slice(0, compact ? 2 : 4);
   const scenario = learn.scenario;
   const recognition = learn.mode === 'recognition';
   const scenarioHtml = scenario && !compact
     ? `<div class="learn-scenario"><strong>Situation:</strong> ${recognition ? `You hear or read this from ${esc(scenario.speaker)} in a ${esc(scenario.place)}.` : `${esc(scenario.speaker)} speaking to ${esc(scenario.listener)} in a ${esc(scenario.place)} to ${esc(scenario.purpose)}.`}</div>`
     : '';
-  const variantHtml = variants.length
-    ? variants.map(v => `<span class="variant-pill"><strong>${esc(v.label)}</strong>${esc(v.de)}${v.use ? `<br><span class="learn-muted">${esc(v.use)}</span>` : ''}</span>`).join('')
-    : '<span class="learn-muted">This sentence is already the best everyday form for the shown situation.</span>';
-  const swapHtml = swaps.length
-    ? swaps.map(([slot, ex]) => `<div class="learn-chunk"><strong>${esc(slot)}</strong><span class="learn-muted">${esc(ex)}</span></div>`).join('')
-    : '<span class="learn-muted">Use this as a fixed phrase in the situation shown.</span>';
+  const useHtml = learn.use ? `<div class="learn-muted" style="margin-top:4px"><strong>Use this when:</strong> ${esc(learn.use)}</div>` : '';
+  const expectedReply = stripLeadingLabel(learn.expectedReply, 'You may hear');
+  const activeHtml = `<div class="learn-box">
+    <div class="learn-box-title">What to say next</div>
+    <div><strong>You may hear:</strong> ${esc(expectedReply)}</div>
+    <div style="margin-top:5px"><strong>You can answer:</strong> ${esc(learn.learnerReply)}</div>
+    <div style="margin-top:5px"><strong>Practice:</strong> ${esc(learn.practice)}</div>
+  </div>`;
   return `<div class="learn-panel${compact ? ' compact' : ''}" id="${idPrefix}${s.id}">
 <div class="learn-title">Learn more: ${esc(learn.grammar.title)}</div>
-<div>${esc(learn.meaning)}</div>
+<div><strong>Meaning:</strong> ${esc(learn.meaning)}</div>
+${useHtml}
 ${scenarioHtml}
 <div class="learn-grid">
   <div class="learn-box">
@@ -226,27 +231,7 @@ ${scenarioHtml}
     <div>${esc(learn.grammar.simple)}</div>
     ${learn.grammar.watchOut ? `<div style="margin-top:6px"><strong>Watch out:</strong> ${esc(learn.grammar.watchOut)}</div>` : ''}
   </div>
-  <div class="learn-box">
-    <div class="learn-box-title">Pattern</div>
-    <div>${pattern ? `<strong>${esc(pattern.template)}</strong><br><span class="learn-muted">${esc(pattern.meaning)}</span>` : '<span class="learn-muted">Fixed daily-life phrase.</span>'}</div>
-  </div>
-  <div class="learn-box">
-    <div class="learn-box-title">Breakdown</div>
-    ${chunks.map(([de, en]) => `<div class="learn-chunk"><strong>${esc(de)}</strong><span class="learn-muted">${esc(en)}</span></div>`).join('')}
-  </div>
-  <div class="learn-box">
-    <div class="learn-box-title">Variants</div>
-    ${variantHtml}
-  </div>
-  ${compact ? '' : `<div class="learn-box">
-    <div class="learn-box-title">Reusable swaps</div>
-    ${swapHtml}
-  </div>
-  <div class="learn-box">
-    <div class="learn-box-title">Use it actively</div>
-    <div><strong>You may hear:</strong> ${esc(learn.expectedReply)}</div>
-    <div style="margin-top:5px"><strong>Practice:</strong> ${esc(learn.practice)}</div>
-  </div>`}
+  ${activeHtml}
 </div>
   </div>`;
 }
@@ -369,15 +354,15 @@ ${cards}
 function setPatFilter(f) { V.patFilter = f; render(); }
 
 const PATTERN_INFORMAL_EXAMPLES = {
-  polite_request_modal: { de: 'Kannst du bitte langsamer sprechen?', en: 'Could you please speak more slowly?' },
+  polite_request_modal: { de: 'Könntest du bitte langsamer sprechen?', en: 'Could you please speak more slowly?' },
   ask_write_down: { de: 'Kannst du das bitte aufschreiben?', en: 'Can you write that down, please?' },
   ask_explain_again: { de: 'Kannst du das kurz erklären?', en: 'Can you briefly explain that?' },
   ask_availability: { de: 'Hast du diese Woche Zeit?', en: 'Do you have time this week?' },
   works_for_you: { de: 'Passt dir Dienstagvormittag?', en: 'Does Tuesday morning work for you?' },
   call_about: { de: 'Ich rufe wegen deiner Nachricht an.', en: 'I am calling about your message.' },
-  written_confirmation: { de: 'Kannst du mir das schriftlich bestätigen?', en: 'Can you confirm that to me in writing?' },
+  written_confirmation: { de: 'Kannst du mir das schriftlich bestätigen?', en: 'Can you confirm that in writing for me?' },
   would_possible: { de: 'Könnte ich später kommen?', en: 'Could I come later?' },
-  send_followup: { de: 'Ich schicke dir den Link später.', en: 'I will send you the link later.' },
+  send_followup: { de: 'Ich schicke dir später den Link.', en: 'I will send you the link later.' },
   plan_invite: { de: 'Hättest du Lust, einen Kaffee zu trinken?', en: 'Would you like to have a coffee?' },
   let_know: { de: 'Sag mir Bescheid, wenn du da bist.', en: 'Let me know when you are there.' },
 };
@@ -1076,7 +1061,7 @@ function renderPractice() {
       // Front: German + phonetics. Back: English + usage
       const isFav0 = DB.favorites.has(s.id);
       const recognitionReply = recognitionMode && s.learn
-        ? `<div class="practice-use"><strong>Expected response:</strong> ${esc(s.learn.expectedReply)}</div>`
+        ? `<div class="practice-use"><strong>You can answer:</strong> ${esc(s.learn.learnerReply || s.learn.expectedReply)}</div>`
         : '';
       cardBody = `
     <div class="practice-card">

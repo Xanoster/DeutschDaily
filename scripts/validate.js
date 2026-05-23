@@ -89,11 +89,14 @@ for (const sentence of SENTENCES) {
   }
   if (!learn.meaning) errors.push(`${sentence.id} missing learn.meaning`);
   if (!learn.scenario) errors.push(`${sentence.id} missing learn.scenario`);
-  if (!learn.grammar || !learn.grammar.title || !learn.grammar.simple || !Array.isArray(learn.grammar.chunks)) {
+  if (!learn.grammar || !learn.grammar.title || !learn.grammar.simple) {
     errors.push(`${sentence.id} incomplete learn.grammar`);
   }
   if (!learn.expectedReply || /Listen for the key detail/.test(learn.expectedReply)) {
     errors.push(`${sentence.id} has generic expectedReply`);
+  }
+  if (!learn.learnerReply) {
+    errors.push(`${sentence.id} missing learn.learnerReply`);
   }
   if (!learn.practice || /Replace one slot in the pattern/.test(learn.practice)) {
     errors.push(`${sentence.id} has generic practice`);
