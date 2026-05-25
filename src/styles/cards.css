@@ -156,18 +156,10 @@
   background: var(--blue-bg);
 }
 
-.reveal-title {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-
 .reveal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 8px;
 }
 
 .reveal-box {
@@ -184,16 +176,6 @@
   text-transform: uppercase;
   letter-spacing: 0.45px;
   margin-bottom: 4px;
-}
-
-.reveal-pattern {
-  color: var(--purple);
-  font-weight: 750;
-  margin-bottom: 4px;
-}
-
-.reveal-watch {
-  margin-top: 6px;
 }
 
 .vocab-row {

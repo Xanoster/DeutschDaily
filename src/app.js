@@ -295,13 +295,7 @@ function esc(v) {
     .replace(/'/g, '&#39;');
 }
 
-function stripLeadingLabel(value, label) {
-  const text = String(value ?? '').trim();
-  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return text.replace(new RegExp(`^${escapedLabel}:?\\s*`, 'i'), '').trim();
-}
-
-function revealVocabItems(s, pattern) {
+function revealVocabItems(s) {
   const items = [];
   const add = (de, en, note = '') => {
     const key = `${de}|${en}`.toLowerCase();
@@ -310,32 +304,23 @@ function revealVocabItems(s, pattern) {
   };
   (s.vocab || []).forEach(item => add(item.de, item.en, item.note));
   (s.chunks || []).forEach(chunk => add(chunk[0], chunk[1]));
-  (s.swaps || []).forEach(([name, examples]) => add(name, examples));
-  if (pattern && Array.isArray(pattern.slots)) {
-    pattern.slots.forEach(slot => add(`[${slot.name}]`, (slot.examples || []).join(', ')));
-  }
   return items.slice(0, 8);
 }
 function renderRevealDetails(s, compact = false, idPrefix = 'rd-') {
   const learn = s.learn;
   if (!learn) return '';
-  const pattern = findMatchingPattern(s);
-  const expectedReply = stripLeadingLabel(learn.expectedReply, 'You may hear');
-  const vocab = revealVocabItems(s, pattern);
+  const vocab = revealVocabItems(s);
   const variants = Array.isArray(learn.variants) ? learn.variants : [];
+  const meaningText = learn.meaning || s.en;
+  const meaningHtml = `<div class="reveal-box"><div class="reveal-box-title">Meaning</div><div>${esc(meaningText)}</div></div>`;
   const vocabHtml = vocab.length ? `<div class="reveal-box"><div class="reveal-box-title">Important vocab</div>${vocab.map(item => `<div class="vocab-row"><strong lang="de">${esc(item.de)}</strong><span>${esc(item.en)}${item.note ? ` · ${esc(item.note)}` : ''}</span></div>`).join('')}</div>` : '';
-  const patternHtml = pattern ? `<div class="reveal-box"><div class="reveal-box-title">Pattern</div><div class="reveal-pattern" lang="de">${esc(pattern.template)}</div><div>${esc(pattern.meaning)}</div>${pattern.watchOut ? `<div class="reveal-watch"><strong>Watch out:</strong> ${esc(pattern.watchOut)}</div>` : ''}</div>` : '';
   const variantsHtml = variants.length ? `<div class="reveal-box"><div class="reveal-box-title">Formal / informal</div>${variants.map(v => `<div class="vocab-row"><strong>${esc(v.label)}</strong><span lang="de">${esc(v.de)}</span></div>`).join('')}</div>` : '';
   const style = compact ? '' : ' style="display:none"';
   return `<div class="reveal-details${compact ? ' compact' : ''}" id="${idPrefix}${s.id}"${style}>
-<div class="reveal-title">Details after reveal</div>
 <div class="reveal-grid">
-  <div class="reveal-box"><div class="reveal-box-title">Use</div><div>${esc(s.use)}</div></div>
+  ${meaningHtml}
   ${vocabHtml}
-  <div class="reveal-box"><div class="reveal-box-title">Why it works</div><div>${esc(learn.grammar.simple)}</div>${learn.grammar.watchOut ? `<div class="reveal-watch"><strong>Watch out:</strong> ${esc(learn.grammar.watchOut)}</div>` : ''}</div>
-  ${patternHtml}
   ${variantsHtml}
-  <div class="reveal-box"><div class="reveal-box-title">Expected reply</div><div><strong>You may hear:</strong> ${esc(expectedReply)}</div><div class="reveal-watch"><strong>You can answer:</strong> ${esc(learn.learnerReply)}</div><div class="reveal-watch"><strong>Practice:</strong> ${esc(learn.practice)}</div></div>
 </div>
   </div>`;
 }
