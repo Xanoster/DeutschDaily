@@ -273,6 +273,10 @@ assert(!revealHtml.includes('Practice:'), 'revealed details should not include p
 const variantCard = t.SENTENCES.find(sentence => sentence.learn && Array.isArray(sentence.learn.variants) && sentence.learn.variants.length > 0);
 const variantRevealHtml = t.renderRevealDetails(variantCard, true, 'variant-');
 assert(variantRevealHtml.includes('Formal / informal'), 'revealed details should include formal/informal variants when available');
+const missingSentenceVocabIds = Array.from(t.SENTENCES)
+  .filter(sentence => !t.renderRevealDetails(sentence, true, 'all-').includes('Sentence vocab'))
+  .map(sentence => sentence.id);
+assert.deepStrictEqual(missingSentenceVocabIds, [], 'every sentence should render useful sentence vocab');
 assert(!revealHtml.includes('Learn' + ' more'), 'revealed details must not contain old reveal-button copy');
 
 console.log('logic-tests passed');
